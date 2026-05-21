@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block title %}Complaint {{ complaint.complaint_id }} — Industrial CMS{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="detail-header">
+    <div class="detail-header-left">
+        <a href="javascript:history.back()" class="back-link">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+            Back
+        </a>
+        <div class="detail-id-row">
+            <h1 class="detail-complaint-id">{{ complaint.complaint_id }}</h1>
+            <span class="badge status-{{ complaint.status|lower|replace(' ', '-') }}" role="status">{{ complaint.status }}</span>
+            <span class="badge priority-{{ complaint.priority|lower }}">{{ complaint.priority }}</span>
+        </div>
+        <div class="detail-meta">
+            <span class="dept-chip dept-chip-{{ complaint.department|lower }}">{{ complaint.department }}</span>
+            <span class="detail-meta-sep" aria-hidden="true">·</span>
+            <span>{{ complaint.machine_name }}</span>
+            <span class="detail-meta-sep" aria-hidden="true">·</span>
+            <span>{{ complaint.location }}</span>
+        </div>
+    </div>
+
+    {% if complaint.status in ['Accepted','In Progress'] and complaint.accepted_at %}
+    <div class="live-timer-card" aria-label="Live work timer">
+        <span class="live-timer-label">Live Work Timer</span>
+        <span class="live-timer big" data-start="{{ complaint.accepted_at.isoformat() }}">00:00:00</span>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Main grid -->
+<div class="detail-grid">
+
+    <!-- Left column -->
+    <div class="detail-col">
+
+        <!-- Complaint info -->
+        <section class="panel" aria-labelledby="info-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="info-heading">Complaint Information</h2>
+            </div>
+            <dl class="info-list">
+                <div class="info-row">
+                    <dt>Employee</dt>
+                    <dd>
+                        <div class="employee-cell">
+                            <div class="employee-avatar employee-avatar-sm" aria-hidden="true">{{ complaint.employee_name[0] | upper }}</div>
+                            <div>
+                                <div class="employee-name">{{ complaint.employee_name }}</div>
+                                <div class="employee-phone">{{ complaint.employee_id }}</div>
+                            </div>
+                        </div>
+                    </dd>
+                </div>
+                <div class="info-row">
+                    <dt>Phone</dt>
+                    <dd><a href="tel:{{ complaint.employee_phone }}" class="info-link">{{ complaint.employee_phone }}</a></dd>
+                </div>
+                <div class="info-row">
+                    <dt>Department</dt>
+                    <dd><span class="dept-chip dept-chip-{{ complaint.department|lower }}">{{ complaint.department }}</span></dd>
+                </div>
+                <div class="info-row">
+                    <dt>Machine / Sensor</dt>
+                    <dd>{{ complaint.machine_name }} <span class="info-id">{{ complaint.machine_id }}</span></dd>
+                </div>
+                <div class="info-row">
+                    <dt>Location</dt>
+                    <dd>{{ complaint.location }}</dd>
+                </div>
+                <div class="info-row">
+                    <dt>Problem Type</dt>
+                    <dd>{{ complaint.problem_type }}</dd>
+                </div>
+                <div class="info-row">
+                    <dt>Communication</dt>
+                    <dd>{{ complaint.communication_preference }}</dd>
+                </div>
+                <div class="info-row info-row-full">
+                    <dt>Description</dt>
+                    <dd class="info-desc">{{ complaint.description }}</dd>
+                </div>
+            </dl>
+        </section>
+
+        <!-- Evidence -->
+        <section class="panel" aria-labelledby="evidence-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="evidence-heading">Uploaded Evidence</h2>
+            </div>
+            <div class="evidence-grid">
+                <div class="evidence-item">
+                    <span class="evidence-label">Photo</span>
+                    {% if complaint.photo_path %}
+                        <a href="{{ url_for('static', filename=complaint.photo_path) }}" target="_blank" rel="noopener" class="evidence-img-wrap">
+                            <img src="{{ url_for('static', filename=complaint.photo_path) }}" class="evidence-img" alt="Complaint photo evidence">
+                            <span class="evidence-overlay" aria-hidden="true">View full</span>
+                        </a>
+                    {% else %}
+                        <div class="evidence-empty">
+                            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2" y="5" width="28" height="22" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 20l7-6 5 5 4-3 8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            No photo uploaded
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="evidence-item">
+                    <span class="evidence-label">Audio</span>
+                    {% if complaint.audio_path %}
+                        <div class="audio-player-wrap">
+                            <audio controls src="{{ url_for('static', filename=complaint.audio_path) }}" class="audio-player"></audio>
+                        </div>
+                    {% else %}
+                        <div class="evidence-empty">
+                            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="12" y="2" width="8" height="14" rx="4" stroke="currentColor" stroke-width="1.5"/><path d="M6 14a10 10 0 0020 0M16 24v6M10 30h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            No audio uploaded
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Forward history -->
+        <section class="panel" aria-labelledby="history-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="history-heading">Forward History</h2>
+            </div>
+            {% if complaint.forward_history %}
+            <ol class="forward-history">
+                {% for h in complaint.forward_history %}
+                <li class="forward-entry">
+                    <div class="forward-route">
+                        <span class="dept-chip dept-chip-{{ h.from_department|lower }}">{{ h.from_department }}</span>
+                        <span class="forward-arrow" aria-label="forwarded to">→</span>
+                        <span class="dept-chip dept-chip-{{ h.to_department|lower }}">{{ h.to_department }}</span>
+                    </div>
+                    <div class="forward-meta">By <strong>{{ h.forwarded_user.name }}</strong> &middot; {{ h.forwarded_at }}</div>
+                    <div class="forward-reason">{{ h.reason }}</div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="panel-empty">No forwarding history.</p>
+            {% endif %}
+        </section>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="detail-col">
+
+        <!-- Timers -->
+        <section class="panel" aria-labelledby="timers-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="timers-heading">Timeline</h2>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot timeline-dot-created" aria-hidden="true"></div>
+                    <div>
+                        <div class="timeline-label">Created</div>
+                        <div class="timeline-value">{{ complaint.created_at }}</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot {% if complaint.accepted_at %}timeline-dot-accepted{% endif %}" aria-hidden="true"></div>
+                    <div>
+                        <div class="timeline-label">Accepted</div>
+                        <div class="timeline-value">{{ complaint.accepted_at or '—' }}</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot {% if complaint.resolved_at %}timeline-dot-resolved{% endif %}" aria-hidden="true"></div>
+                    <div>
+                        <div class="timeline-label">Resolved</div>
+                        <div class="timeline-value">{{ complaint.resolved_at or '—' }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="timer-stats">
+                <div class="timer-stat">
+                    <span class="timer-stat-label">Waiting</span>
+                    <span class="timer-stat-val">{{ complaint.waiting_seconds()|duration }}</span>
+                </div>
+                <div class="timer-stat">
+                    <span class="timer-stat-label">Resolving</span>
+                    <span class="timer-stat-val">{{ complaint.resolving_seconds()|duration }}</span>
+                </div>
+                <div class="timer-stat timer-stat-total">
+                    <span class="timer-stat-label">Total</span>
+                    <span class="timer-stat-val">{{ complaint.total_seconds()|duration }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Machine verification -->
+        <section class="panel" aria-labelledby="verify-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="verify-heading">Machine / Sensor Verification</h2>
+            </div>
+            <div class="verify-status-row">
+                <div class="verify-status-item">
+                    <span class="verify-label">Power Status</span>
+                    <span class="verify-badge verify-power-{{ complaint.power_status|lower }}">{{ complaint.power_status }}</span>
+                </div>
+                <div class="verify-status-item">
+                    <span class="verify-label">Fault Status</span>
+                    <span class="verify-badge verify-fault-{{ complaint.fault_status|lower|replace(' ', '-') }}">{{ complaint.fault_status }}</span>
+                </div>
+            </div>
+            {% if current_user.role == 'OPERATOR' %}
+            <form method="POST" action="{{ url_for('operator.verify_machine', id=complaint.id) }}" class="verify-form">
+                <div class="field">
+                    <label class="field-label" for="power_status">Power Supply Status</label>
+                    <select class="field-input field-select" id="power_status" name="power_status">
+                        {% for p in ['ON','LOW','OFF'] %}
+                        <option value="{{ p }}" {% if complaint.power_status == p %}selected{% endif %}>{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="fault_status">Fault Status</label>
+                    <select class="field-input field-select" id="fault_status" name="fault_status">
+                        {% for f in ['Normal','Fault Detected','Under Repair','Resolved'] %}
+                        <option value="{{ f }}" {% if complaint.fault_status == f %}selected{% endif %}>{{ f }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-action btn-action-primary">
+                    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    Update Verification
+                </button>
+            </form>
+            {% endif %}
+        </section>
+
+        <!-- Actions -->
+        <section class="panel" aria-labelledby="actions-heading">
+            <div class="panel-header">
+                <h2 class="panel-title" id="actions-heading">Actions</h2>
+            </div>
+
+            {% if current_user.role == 'OPERATOR' %}
+                <!-- Quick action buttons -->
+                <div class="action-btn-row">
+                    <form method="POST" action="{{ url_for('operator.accept', id=complaint.id) }}">
+                        <button type="submit" class="btn-action btn-action-accept">
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Accept
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('operator.start', id=complaint.id) }}">
+                        <button type="submit" class="btn-action btn-action-start">
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+                            Start Work
+                        </button>
+                    </form>
+                </div>
+
+                <form method="POST" action="{{ url_for('operator.resolve', id=complaint.id) }}" class="action-form">
+                    <div class="field">
+                        <label class="field-label" for="op-remarks">Resolution Notes</label>
+                        <textarea class="field-input field-textarea" id="op-remarks" name="operator_remarks" rows="3" placeholder="Describe the resolution...">{{ complaint.operator_remarks or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn-action btn-action-primary">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        Mark as Resolved
+                    </button>
+                </form>
+
+                <div class="action-divider" aria-hidden="true"></div>
+
+                <form method="POST" action="{{ url_for('operator.forward', id=complaint.id) }}" class="action-form">
+                    <h3 class="action-sub-title">Forward Complaint</h3>
+                    <div class="field">
+                        <label class="field-label" for="op-forward-dept">Forward To</label>
+                        <select class="field-input field-select" id="op-forward-dept" name="to_department" required>
+                            <option value="" disabled selected>Select department</option>
+                            {% for d in ['Electrical','Mechanical','Supervisor'] %}
+                                {% if d != complaint.department %}
+                                <option value="{{ d }}">{{ d }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="op-forward-reason">Reason</label>
+                        <textarea class="field-input field-textarea" id="op-forward-reason" name="reason" rows="2" placeholder="Why is this being forwarded?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-action btn-action-warning">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg>
+                        Forward Complaint
+                    </button>
+                </form>
+
+            {% else %}
+                <!-- Admin controls -->
+                <form method="POST" action="{{ url_for('admin.update_status', id=complaint.id) }}" class="action-form">
+                    <div class="field">
+                        <label class="field-label" for="admin-status">Set Status</label>
+                        <select class="field-input field-select" id="admin-status" name="status">
+                            {% for s in ['Pending','Accepted','In Progress','Resolved','Forwarded','Rejected'] %}
+                            <option value="{{ s }}" {% if complaint.status == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="admin-remarks">Admin Remarks</label>
+                        <textarea class="field-input field-textarea" id="admin-remarks" name="admin_remarks" rows="3" placeholder="Optional admin notes...">{{ complaint.admin_remarks or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn-action btn-action-primary">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                        Update Status
+                    </button>
+                </form>
+
+                <div class="action-divider" aria-hidden="true"></div>
+
+                <form method="POST" action="{{ url_for('admin.forward', id=complaint.id) }}" class="action-form">
+                    <h3 class="action-sub-title">Forward Complaint</h3>
+                    <div class="field">
+                        <label class="field-label" for="admin-forward-dept">Forward To</label>
+                        <select class="field-input field-select" id="admin-forward-dept" name="to_department" required>
+                            <option value="" disabled selected>Select department</option>
+                            {% for d in ['Electrical','Mechanical','Supervisor'] %}
+                                {% if d != complaint.department %}
+                                <option value="{{ d }}">{{ d }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="admin-forward-reason">Reason</label>
+                        <textarea class="field-input field-textarea" id="admin-forward-reason" name="reason" rows="2" placeholder="Why is this being forwarded?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-action btn-action-warning">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg>
+                        Forward Complaint
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ url_for('admin.delete', id=complaint.id) }}" onsubmit="return confirm('Permanently delete this complaint? This cannot be undone.')">
+                    <button type="submit" class="btn-action btn-action-danger">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        Delete Complaint
+                    </button>
+                </form>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Industrial CMS{% endblock %}
+{% block content %}
+
+<div class="dash-header">
+    <div>
+        <p class="dash-eyebrow">Administrator</p>
+        <h1 class="dash-title">Dashboard</h1>
+    </div>
+    <div class="dash-header-actions">
+        <a href="{{ url_for('admin.complaints') }}" class="btn-outline">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm10 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" clip-rule="evenodd"/></svg>
+            View All Complaints
+        </a>
+    </div>
+</div>
+
+<!-- Stats grid -->
+<div class="stats-grid" role="list" aria-label="Complaint statistics">
+    <div class="stat-card" role="listitem">
+        <span class="stat-card-label">Total</span>
+        <strong class="stat-card-num">{{ total }}</strong>
+        <span class="stat-card-sub">complaints</span>
+    </div>
+    <div class="stat-card stat-pending" role="listitem">
+        <span class="stat-card-label">Pending</span>
+        <strong class="stat-card-num">{{ counts.pending }}</strong>
+        <span class="stat-card-sub">awaiting action</span>
+    </div>
+    <div class="stat-card stat-accepted" role="listitem">
+        <span class="stat-card-label">Accepted</span>
+        <strong class="stat-card-num">{{ counts.accepted }}</strong>
+        <span class="stat-card-sub">in queue</span>
+    </div>
+    <div class="stat-card stat-progress" role="listitem">
+        <span class="stat-card-label">In Progress</span>
+        <strong class="stat-card-num">{{ counts.in_progress }}</strong>
+        <span class="stat-card-sub">active</span>
+    </div>
+    <div class="stat-card stat-resolved" role="listitem">
+        <span class="stat-card-label">Resolved</span>
+        <strong class="stat-card-num">{{ counts.resolved }}</strong>
+        <span class="stat-card-sub">closed</span>
+    </div>
+    <div class="stat-card stat-rejected" role="listitem">
+        <span class="stat-card-label">Rejected</span>
+        <strong class="stat-card-num">{{ counts.rejected }}</strong>
+        <span class="stat-card-sub">dismissed</span>
+    </div>
+    <div class="stat-card stat-critical" role="listitem">
+        <span class="stat-card-label">High / Critical</span>
+        <strong class="stat-card-num">{{ counts.high_critical }}</strong>
+        <span class="stat-card-sub">priority alerts</span>
+    </div>
+    <div class="stat-card stat-time" role="listitem">
+        <span class="stat-card-label">Avg Resolve</span>
+        <strong class="stat-card-num">{{ avg_seconds|duration }}</strong>
+        <span class="stat-card-sub">average time</span>
+    </div>
+</div>
+
+<!-- Department breakdown -->
+<section class="panel" aria-labelledby="dept-heading">
+    <div class="panel-header">
+        <h2 class="panel-title" id="dept-heading">Department Breakdown</h2>
+    </div>
+    <div class="dept-breakdown" role="list">
+        {% for dept in ['Electrical', 'Mechanical', 'Supervisor'] %}
+        <a href="{{ url_for('admin.complaints', department=dept) }}" class="dept-mini dept-mini-{{ dept|lower }}" role="listitem">
+            <div class="dept-mini-icon" aria-hidden="true">
+                {% if dept == 'Electrical' %}
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                {% elif dept == 'Mechanical' %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-3.5-7.5-1.5 1.5m-9 9-1.5 1.5m0-12 1.5 1.5m9 9 1.5 1.5"/></svg>
+                {% else %}
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 100 10A5 5 0 0012 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>
+                {% endif %}
+            </div>
+            <span class="dept-mini-name">{{ dept }}</span>
+            <strong class="dept-mini-count">{{ dept_counts.get(dept, 0) }}</strong>
+            <span class="dept-mini-arrow" aria-hidden="true">→</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Recent complaints -->
+<section class="panel" aria-labelledby="recent-heading">
+    <div class="panel-header">
+        <h2 class="panel-title" id="recent-heading">Latest Complaints</h2>
+        <a href="{{ url_for('admin.complaints') }}" class="panel-link">View all →</a>
+    </div>
+    {% include "_complaint_table.html" %}
+</section>
+
+{% endblock %}

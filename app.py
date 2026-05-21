@@ -1,0 +1,63 @@
+from flask import Flask
+from flask_login import LoginManager
+from pathlib import Path
+
+from config import Config
+from models import db
+from models.user import User
+from routes.public_routes import public_bp
+from routes.auth_routes import auth_bp
+from routes.admin_routes import admin_bp
+from routes.operator_routes import operator_bp
+from routes.utils import format_seconds
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    Path(app.config["IMAGE_UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
+    Path(app.config["AUDIO_UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
+    Path("instance").mkdir(exist_ok=True)
+
+    db.init_app(app)
+    login_manager.init_app(app)
+
+    app.register_blueprint(public_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(operator_bp)
+
+    app.jinja_env.filters["duration"] = format_seconds
+
+    with app.app_context():
+        db.create_all()
+        seed_users()
+
+    return app
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+def seed_users():
+    users = [
+        ("Admin", "admin@company.com", "admin123", "ADMIN", None),
+        ("Electrical Operator", "electrical@company.com", "electrical123", "OPERATOR", "Electrical"),
+        ("Mechanical Operator", "mechanical@company.com", "mechanical123", "OPERATOR", "Mechanical"),
+        ("Supervisor Operator", "supervisor@company.com", "supervisor123", "OPERATOR", "Supervisor"),
+    ]
+    for name, email, password, role, department in users:
+        existing = User.query.filter_by(email=email).first()
+        if not existing:
+            user = User(name=name, email=email, role=role, department=department)
+            user.set_password(password)
+            db.session.add(user)
+    db.session.commit()
+
+app = create_app()
+
+if __name__ == "__main__":
+    app.run(debug=True)

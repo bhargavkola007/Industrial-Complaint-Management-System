@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Complaint Submitted — Industrial CMS{% endblock %}
+{% block content %}
+
+<div class="success-page">
+
+    <!-- Animated check + burst -->
+    <div class="success-visual" aria-hidden="true">
+        <div class="success-ring success-ring-3"></div>
+        <div class="success-ring success-ring-2"></div>
+        <div class="success-ring success-ring-1"></div>
+        <div class="success-icon-wrap">
+            <svg class="success-check" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle class="check-circle" cx="26" cy="26" r="24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path class="check-mark" d="M14 26l8 9 16-18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Heading -->
+    <div class="success-heading">
+        <p class="success-eyebrow">
+            <span class="eyebrow-dot"></span>
+            Submitted Successfully
+        </p>
+        <h1 class="success-title">Complaint Logged</h1>
+        <p class="success-subtitle">
+            Your complaint has been recorded and assigned to the
+            <strong>{{ complaint.department }}</strong> department.
+            Our team will respond shortly.
+        </p>
+    </div>
+
+    <!-- ID card -->
+    <div class="success-id-card">
+        <div class="id-card-label">Your Complaint ID</div>
+        <div class="id-card-value" id="complaintId">{{ complaint.complaint_id }}</div>
+        <button class="id-copy-btn" onclick="copyId()" aria-label="Copy complaint ID" title="Copy to clipboard">
+            <svg id="copyIcon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+            </svg>
+            <span id="copyLabel">Copy</span>
+        </button>
+    </div>
+
+    <!-- Detail chips -->
+    <div class="success-details" role="list" aria-label="Complaint details">
+        <div class="success-detail-item" role="listitem">
+            <span class="detail-item-label">Department</span>
+            <span class="dept-chip dept-chip-{{ complaint.department|lower }}">{{ complaint.department }}</span>
+        </div>
+        <div class="success-detail-sep" aria-hidden="true"></div>
+        <div class="success-detail-item" role="listitem">
+            <span class="detail-item-label">Status</span>
+            <span class="badge status-{{ complaint.status|lower|replace(' ', '-') }}">{{ complaint.status }}</span>
+        </div>
+        <div class="success-detail-sep" aria-hidden="true"></div>
+        <div class="success-detail-item" role="listitem">
+            <span class="detail-item-label">Priority</span>
+            <span class="badge priority-{{ complaint.priority|lower }}">{{ complaint.priority }}</span>
+        </div>
+        <div class="success-detail-sep" aria-hidden="true"></div>
+        <div class="success-detail-item" role="listitem">
+            <span class="detail-item-label">Machine</span>
+            <span class="detail-item-val">{{ complaint.machine_name }}</span>
+        </div>
+    </div>
+
+    <!-- What happens next -->
+    <div class="success-steps" aria-label="What happens next">
+        <h2 class="success-steps-title">What happens next?</h2>
+        <ol class="success-step-list">
+            <li class="success-step success-step-done">
+                <div class="sstep-icon" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                    <div class="sstep-title">Complaint Filed</div>
+                    <div class="sstep-desc">Your report has been recorded in the system.</div>
+                </div>
+            </li>
+            <li class="success-step">
+                <div class="sstep-icon sstep-pending" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                    <div class="sstep-title">Operator Review</div>
+                    <div class="sstep-desc">A {{ complaint.department }} operator will accept and investigate.</div>
+                </div>
+            </li>
+            <li class="success-step">
+                <div class="sstep-icon sstep-pending" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                    <div class="sstep-title">Work in Progress</div>
+                    <div class="sstep-desc">Issue will be diagnosed and repair work initiated.</div>
+                </div>
+            </li>
+            <li class="success-step">
+                <div class="sstep-icon sstep-pending" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                    <div class="sstep-title">Resolved &amp; Closed</div>
+                    <div class="sstep-desc">You'll be notified via your preferred channel once resolved.</div>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="success-actions">
+        <a href="{{ url_for('public.index') }}" class="btn-submit">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+            Submit Another Complaint
+        </a>
+        <a href="{{ url_for('public.index') }}" class="btn-secondary">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+            Back to Home
+        </a>
+    </div>
+
+</div>
+
+<script>
+function copyId() {
+    const id = document.getElementById('complaintId').textContent.trim();
+    navigator.clipboard.writeText(id).then(() => {
+        const icon = document.getElementById('copyIcon');
+        const label = document.getElementById('copyLabel');
+        label.textContent = 'Copied!';
+        icon.innerHTML = '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>';
+        setTimeout(() => {
+            label.textContent = 'Copy';
+            icon.innerHTML = '<path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>';
+        }, 2000);
+    });
+}
+</script>
+
+{% endblock %}

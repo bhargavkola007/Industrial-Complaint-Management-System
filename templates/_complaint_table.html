@@ -1,0 +1,77 @@
+<div class="table-wrap" role="region" aria-label="Complaints table" tabindex="0">
+    <table class="complaints-table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Employee</th>
+                <th scope="col">Department</th>
+                <th scope="col">Machine / Sensor</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Status</th>
+                <th scope="col">Timer</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in complaints %}
+            <tr class="table-row" onclick="window.location='{% if current_user.role == "ADMIN" %}{{ url_for("admin.complaint_detail", id=c.id) }}{% else %}{{ url_for("operator.complaint_detail", id=c.id) }}{% endif %}'">
+                <td class="td-id">
+                    <span class="complaint-id">{{ c.complaint_id }}</span>
+                </td>
+                <td class="td-employee">
+                    <div class="employee-cell">
+                        <div class="employee-avatar" aria-hidden="true">{{ c.employee_name[0] | upper }}</div>
+                        <div>
+                            <div class="employee-name">{{ c.employee_name }}</div>
+                            <div class="employee-phone">{{ c.employee_phone }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="td-dept">
+                    <span class="dept-chip dept-chip-{{ c.department|lower }}">{{ c.department }}</span>
+                </td>
+                <td class="td-machine">
+                    <div class="machine-name">{{ c.machine_name }}</div>
+                    <div class="machine-id">{{ c.machine_id }}</div>
+                </td>
+                <td>
+                    <span class="badge priority-{{ c.priority|lower }}" aria-label="Priority: {{ c.priority }}">{{ c.priority }}</span>
+                </td>
+                <td>
+                    <span class="badge status-{{ c.status|lower|replace(' ', '-') }}" aria-label="Status: {{ c.status }}">{{ c.status }}</span>
+                </td>
+                <td class="td-timer">
+                    {% if c.status in ['Accepted','In Progress'] and c.accepted_at %}
+                        <span class="live-timer live-timer-sm" data-start="{{ c.accepted_at.isoformat() }}" aria-label="Live work timer">00:00:00</span>
+                    {% elif c.resolved_at %}
+                        <span class="timer-done">{{ c.resolving_seconds()|duration }}</span>
+                    {% else %}
+                        <span class="timer-na">—</span>
+                    {% endif %}
+                </td>
+                <td class="td-action" onclick="event.stopPropagation()">
+                    {% if current_user.role == 'ADMIN' %}
+                        <a class="tbl-btn" href="{{ url_for('admin.complaint_detail', id=c.id) }}">Open</a>
+                    {% else %}
+                        <a class="tbl-btn" href="{{ url_for('operator.complaint_detail', id=c.id) }}">Open</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="table-empty">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="4" y="10" width="40" height="32" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M4 18h40M14 6v8M34 6v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M18 28h12M18 34h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <p>No complaints found</p>
+                        <span>Try adjusting your filters</span>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

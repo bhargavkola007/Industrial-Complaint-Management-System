@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}{{ department }} Complaint — Industrial CMS{% endblock %}
+{% block content %}
+
+<div class="form-page">
+
+    <!-- Page header -->
+    <div class="form-page-header">
+        <a href="{{ url_for('public.index') }}" class="back-link">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+            Back
+        </a>
+        <div class="form-dept-badge dept-badge-{{ department|lower }}">{{ department }}</div>
+        <h1 class="form-page-title">{{ department }} Complaint Form</h1>
+        <p class="form-page-sub">Complete all required fields. Your complaint will be tracked in real-time.</p>
+    </div>
+
+    <!-- Steps indicator -->
+    <div class="form-steps" aria-label="Form sections">
+        <div class="step active" data-step="1"><span class="step-num">01</span><span class="step-label">Reporter</span></div>
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step" data-step="2"><span class="step-num">02</span><span class="step-label">Equipment</span></div>
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step" data-step="3"><span class="step-num">03</span><span class="step-label">Issue</span></div>
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step" data-step="4"><span class="step-num">04</span><span class="step-label">Evidence</span></div>
+    </div>
+
+    <form method="POST" action="{{ url_for('public.submit_complaint') }}" enctype="multipart/form-data" class="complaint-form" id="complaintForm">
+        <input type="hidden" name="department" value="{{ department }}">
+
+        <!-- Section 1: Reporter -->
+        <div class="form-section" id="section-1">
+            <div class="form-section-header">
+                <span class="section-num">01</span>
+                <div>
+                    <h2 class="form-section-title">Reporter Information</h2>
+                    <p class="form-section-sub">Who is filing this complaint?</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field-label" for="employee_name">Employee Name <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="employee_name" name="employee_name" required placeholder="Full name">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="employee_id">Employee ID <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="employee_id" name="employee_id" required placeholder="EMP-0000">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="employee_phone">Phone Number <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="tel" id="employee_phone" name="employee_phone" required placeholder="+91 XXXXX XXXXX">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="dept_display">Department</label>
+                    <input class="field-input field-disabled" type="text" id="dept_display" value="{{ department }}" disabled aria-readonly="true">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="communication_preference">Preferred Communication <span class="req" aria-hidden="true">*</span></label>
+                    <select class="field-input field-select" id="communication_preference" name="communication_preference" required>
+                        <option value="" disabled selected>Select preference</option>
+                        <option>Message only</option>
+                        <option>Call only</option>
+                        <option>Both call and message</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Equipment -->
+        <div class="form-section" id="section-2">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Equipment Details</h2>
+                    <p class="form-section-sub">Identify the affected machine or sensor</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine Name <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="machine_name" name="machine_name" required placeholder="e.g. Conveyor Belt A">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="machine_id">Machine ID / Sensor ID <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="machine_id" name="machine_id" required placeholder="MCH-0000 / SEN-0000">
+                </div>
+                <div class="field field-full">
+                    <label class="field-label" for="location">Location / Unit / Floor <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="location" name="location" required placeholder="e.g. Unit 3, Floor 2, Bay 7">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Issue -->
+        <div class="form-section" id="section-3">
+            <div class="form-section-header">
+                <span class="section-num">03</span>
+                <div>
+                    <h2 class="form-section-title">Issue Details</h2>
+                    <p class="form-section-sub">Describe the problem clearly</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field-label" for="problem_type">Problem Type <span class="req" aria-hidden="true">*</span></label>
+                    <input class="field-input" type="text" id="problem_type" name="problem_type" required placeholder="e.g. Low power, sensor failure, vibration...">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="priority">Priority Level <span class="req" aria-hidden="true">*</span></label>
+                    <select class="field-input field-select" id="priority" name="priority" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="field field-full">
+                    <label class="field-label" for="description">Problem / Defect Description <span class="req" aria-hidden="true">*</span></label>
+                    <textarea class="field-input field-textarea" id="description" name="description" rows="5" required placeholder="Describe the issue in as much detail as possible — when it started, symptoms, impact on production..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Evidence -->
+        <div class="form-section" id="section-4">
+            <div class="form-section-header">
+                <span class="section-num">04</span>
+                <div>
+                    <h2 class="form-section-title">Evidence Upload</h2>
+                    <p class="form-section-sub">Attach supporting photo or audio (optional)</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field-label">Photo Upload</label>
+                    <label class="upload-zone" for="photo_upload" id="photoZone">
+                        <input type="file" id="photo_upload" name="photo" accept="image/*" class="upload-input" onchange="previewImage(event)">
+                        <div class="upload-idle" id="photoIdle">
+                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <rect x="4" y="8" width="32" height="24" rx="3" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="14" cy="17" r="3" stroke="currentColor" stroke-width="2"/>
+                                <path d="M4 26l8-7 6 6 5-4 9 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Click to upload photo</span>
+                            <span class="upload-hint">JPG, PNG, WEBP up to 10MB</span>
+                        </div>
+                        <img id="imagePreview" class="upload-preview" alt="Photo preview" style="display:none">
+                    </label>
+                </div>
+                <div class="field">
+                    <label class="field-label">Audio Upload</label>
+                    <label class="upload-zone" for="audio_upload" id="audioZone">
+                        <input type="file" id="audio_upload" name="audio" accept="audio/*" class="upload-input" onchange="previewAudio(event)">
+                        <div class="upload-idle" id="audioIdle">
+                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <rect x="18" y="4" width="4" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 16a8 8 0 0016 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M20 30v6M14 36h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Click to upload audio</span>
+                            <span class="upload-hint">MP3, WAV, OGG up to 25MB</span>
+                        </div>
+                        <div id="audioPreview" class="audio-preview" style="display:none">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/></svg>
+                            <span id="audioName" class="audio-name"></span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('public.index') }}" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-submit">
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Submit Complaint
+            </button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+function previewImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = document.getElementById('imagePreview');
+    const idle = document.getElementById('photoIdle');
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+    idle.style.display = 'none';
+}
+function previewAudio(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('audioName').textContent = file.name;
+    document.getElementById('audioPreview').style.display = 'flex';
+    document.getElementById('audioIdle').style.display = 'none';
+}
+</script>
+{% endblock %}

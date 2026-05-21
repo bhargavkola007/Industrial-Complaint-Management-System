@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Home — Industrial CMS{% endblock %}
+{% block content %}
+
+<section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-eyebrow">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        System Operational
+    </div>
+    <h1 id="hero-heading" class="hero-title">
+        Industrial Machine &amp;<br>
+        <span class="hero-title-accent">Sensor Complaint</span><br>
+        Management System
+    </h1>
+    <p class="hero-desc">
+        Submit and track machine, sensor, electrical, mechanical, and supervisor-related
+        complaints quickly and efficiently across your facility.
+    </p>
+    <div class="hero-stats" aria-label="System statistics">
+        <div class="stat-item">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Departments</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Monitoring</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+            <span class="stat-number">Live</span>
+            <span class="stat-label">Tracking</span>
+        </div>
+    </div>
+</section>
+
+<section class="dept-section" aria-labelledby="dept-heading">
+    <div class="section-header">
+        <h2 id="dept-heading" class="section-title">File a Complaint</h2>
+        <p class="section-sub">Select your department to begin</p>
+    </div>
+
+    <div class="department-grid" role="list">
+
+        <a class="dept-card dept-electrical" href="{{ url_for('public.complaint_form', department='electrical') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <path d="M22 4L8 22H20L18 36L32 18H20L22 4Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Electrical</div>
+                <h3 class="dept-title">Electrical<br>Complaint</h3>
+                <p class="dept-desc">Power supply, wiring, sensor signal, panel, motor starter, and electrical faults.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Power Supply</span>
+                    <span>Wiring</span>
+                    <span>Sensor Signal</span>
+                    <span>Motor Starter</span>
+                </div>
+                <div class="dept-cta" aria-hidden="true">
+                    File Complaint
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        <a class="dept-card dept-mechanical" href="{{ url_for('public.complaint_form', department='mechanical') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <circle cx="20" cy="20" r="7" fill="currentColor"/>
+                        <path d="M20 2v6M20 32v6M2 20h6M32 20h6M6.34 6.34l4.24 4.24M29.42 29.42l4.24 4.24M29.42 10.58l4.24-4.24M6.34 33.66l4.24-4.24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Mechanical</div>
+                <h3 class="dept-title">Mechanical<br>Complaint</h3>
+                <p class="dept-desc">Machine breakdown, vibration, alignment, bearing, leakage, and mechanical defects.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Machine Breakdown</span>
+                    <span>Vibration</span>
+                    <span>Bearing</span>
+                    <span>Leakage</span>
+                </div>
+                <div class="dept-cta" aria-hidden="true">
+                    File Complaint
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        <a class="dept-card dept-supervisor" href="{{ url_for('public.complaint_form', department='supervisor') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <circle cx="20" cy="12" r="7" fill="currentColor"/>
+                        <path d="M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Supervisor</div>
+                <h3 class="dept-title">Supervisor<br>Complaint</h3>
+                <p class="dept-desc">Inspection, safety, coordination, production issue, and escalation complaints.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Safety</span>
+                    <span>Inspection</span>
+                    <span>Coordination</span>
+                    <span>Escalation</span>
+                </div>
+                <div class="dept-cta" aria-hidden="true">
+                    File Complaint
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

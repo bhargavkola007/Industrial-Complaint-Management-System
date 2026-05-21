@@ -41,7 +41,7 @@
 #     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 #     ALLOWED_AUDIO_EXTENSIONS = {"mp3", "wav", "m4a", "ogg", "aac", "webm"}
     
-    import os
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent

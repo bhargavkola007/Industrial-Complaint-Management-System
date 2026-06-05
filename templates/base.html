@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
 <!-- Animated background grid -->
@@ -104,6 +105,7 @@
 </footer>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 <script>
 function toggleNavbar() {
     const nav = document.getElementById('navLinks');
@@ -112,7 +114,7 @@ function toggleNavbar() {
     btn.setAttribute('aria-expanded', isOpen);
     btn.classList.toggle('active', isOpen);
 }
-// Close nav on outside click
+
 document.addEventListener('click', function(e) {
     const nav = document.getElementById('navLinks');
     const btn = document.getElementById('navToggle');
@@ -122,6 +124,15 @@ document.addEventListener('click', function(e) {
         btn.setAttribute('aria-expanded', false);
     }
 });
+
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
 </script>
+
+</body>
+</html>
 </body>
 </html>

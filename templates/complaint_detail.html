@@ -26,7 +26,7 @@
     {% if complaint.status in ['Accepted','In Progress'] and complaint.accepted_at %}
     <div class="live-timer-card" aria-label="Live work timer">
         <span class="live-timer-label">Live Work Timer</span>
-        <span class="live-timer big" data-start="{{ complaint.accepted_at.isoformat() }}">00:00:00</span>
+        <span class="live-timer big" data-start="{{ complaint.accepted_at }}">00:00:00</span>
     </div>
     {% endif %}
 </div>
@@ -76,9 +76,9 @@
                     <dd>{{ complaint.problem_type }}</dd>
                 </div>
                 <div class="info-row">
-                    <dt>Communication</dt>
-                    <dd>{{ complaint.communication_preference }}</dd>
-                </div>
+    <dt>Communication</dt>
+    <dd>{{ complaint.communication_preference }}</dd>
+</div>
                 <div class="info-row info-row-full">
                     <dt>Description</dt>
                     <dd class="info-desc">{{ complaint.description }}</dd>

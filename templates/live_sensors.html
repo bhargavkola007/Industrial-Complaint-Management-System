@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Live Sensors — Industrial CMS{% endblock %}
+{% block content %}
+
+<div class="dash-header">
+    <div>
+        <p class="dash-eyebrow">Hardware Monitoring</p>
+        <h1 class="dash-title">Live Sensor Dashboard</h1>
+    </div>
+
+    <div class="dash-header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn-outline">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <span class="stat-card-label">Temperature</span>
+        <strong class="stat-card-num">
+            <span id="temperature">--</span>°C
+        </strong>
+        <span class="stat-card-sub">DHT Sensor</span>
+    </div>
+
+    <div class="stat-card stat-progress">
+        <span class="stat-card-label">Humidity</span>
+        <strong class="stat-card-num">
+            <span id="humidity">--</span>%
+        </strong>
+        <span class="stat-card-sub">DHT Sensor</span>
+    </div>
+
+    <div class="stat-card stat-pending">
+        <span class="stat-card-label">IR Beam</span>
+        <strong class="stat-card-num">
+            <span id="ir_beam">--</span>
+        </strong>
+        <span class="stat-card-sub">Object / Beam Status</span>
+    </div>
+
+    <div class="stat-card stat-critical">
+        <span class="stat-card-label">Current Sensor</span>
+        <strong class="stat-card-num">
+            <span id="current">--</span>A
+        </strong>
+        <span class="stat-card-sub">Machine Current</span>
+    </div>
+
+</div>
+
+<section class="panel">
+    <div class="panel-header">
+        <h2 class="panel-title">Last Updated</h2>
+    </div>
+
+    <p id="updated_at">--</p>
+</section>
+
+<script>
+async function loadSensorData() {
+    try {
+        const response = await fetch("{{ url_for('sensor.latest_sensor') }}");
+        const data = await response.json();
+
+        document.getElementById("temperature").textContent = data.temperature;
+        document.getElementById("humidity").textContent = data.humidity;
+        document.getElementById("ir_beam").textContent = data.ir_beam;
+        document.getElementById("current").textContent = data.current;
+        document.getElementById("updated_at").textContent = data.updated_at;
+
+    } catch (error) {
+        console.log("Sensor fetch failed:", error);
+    }
+}
+
+loadSensorData();
+setInterval(loadSensorData, 2000);
+</script>
+
+{% endblock %}

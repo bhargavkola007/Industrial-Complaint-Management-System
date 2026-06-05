@@ -38,57 +38,57 @@
             </div>
 
             <form method="POST" class="login-form" novalidate>
-                <div class="field-group">
-                    <label class="field-label" for="email">Email Address</label>
-                    <div class="field-input-wrap">
-                        <svg class="field-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                        </svg>
-                        <input
-                            class="field-input"
-                            type="email"
-                            id="email"
-                            name="email"
-                            required
-                            placeholder="you@company.com"
-                            autocomplete="email"
-                            autofocus
-                        >
-                    </div>
-                </div>
 
-                <div class="field-group">
-                    <label class="field-label" for="password">Password</label>
-                    <div class="field-input-wrap">
-                        <svg class="field-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <input
-                            class="field-input"
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                        >
-                        <button type="button" class="field-toggle-pw" onclick="togglePassword()" aria-label="Toggle password visibility">
-                            <svg id="eyeIcon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+    <div class="field-group">
+        <label class="field-label" for="email">Select User</label>
+        <div class="field-input-wrap">
+            <svg class="field-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z"/>
+            </svg>
 
-                <button type="submit" class="btn-login">
-                    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    Sign In to System
-                </button>
-            </form>
+            <select class="field-input" id="email" name="email" required>
+                <option value="" disabled selected>Select role/user</option>
+                <option value="admin@company.com">Admin</option>
+                <option value="electrical@company.com">Electrical Operator</option>
+                <option value="mechanical@company.com">Mechanical Operator</option>
+                <option value="supervisor@company.com">Supervisor Operator</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label" for="password">Password</label>
+        <div class="field-input-wrap">
+            <svg class="field-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+
+            <input
+                class="field-input"
+                type="password"
+                id="password"
+                name="password"
+                required
+                placeholder="Enter password"
+                autocomplete="current-password"
+            >
+
+            <button type="button" class="field-toggle-pw" onclick="togglePassword()" aria-label="Toggle password visibility">
+                <svg id="eyeIcon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <button type="submit" class="btn-login">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Sign In
+    </button>
+</form>
 
             <!-- Default credentials reference -->
             <details class="creds-details">
@@ -127,6 +127,11 @@ function togglePassword() {
     const isText = input.type === 'text';
     input.type = isText ? 'password' : 'text';
 }
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
 </script>
 
 {% endblock %}

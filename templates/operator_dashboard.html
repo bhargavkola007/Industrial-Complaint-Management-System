@@ -1,34 +1,98 @@
 {% extends "base.html" %}
 {% block title %}{% if is_admin_list %}All Complaints{% else %}Operator Dashboard{% endif %}{% endblock %}
 {% block content %}
+
 <div class="section-head">
-    <h1>{% if is_admin_list %}All Complaints{% else %}{{ current_user.department }} Operator Dashboard{% endif %}</h1>
+    <h1>
+        {% if is_admin_list %}
+            All Complaints
+        {% else %}
+            {{ current_user.department }} Operator Dashboard
+        {% endif %}
+    </h1>
+
     {% if is_admin_list %}
-    <form class="filters" method="GET">
+    <form class="filters" method="GET" id="filterForm">
         <select name="department">
             <option value="">All Departments</option>
             {% for d in ['Electrical','Mechanical','Supervisor'] %}
             <option value="{{ d }}" {% if request.args.get('department') == d %}selected{% endif %}>{{ d }}</option>
             {% endfor %}
         </select>
+
         <select name="status">
             <option value="">All Status</option>
             {% for s in ['Pending','Accepted','In Progress','Resolved','Forwarded','Rejected'] %}
             <option value="{{ s }}" {% if request.args.get('status') == s %}selected{% endif %}>{{ s }}</option>
             {% endfor %}
         </select>
+
         <select name="priority">
             <option value="">All Priority</option>
             {% for p in ['Low','Medium','High','Critical'] %}
             <option value="{{ p }}" {% if request.args.get('priority') == p %}selected{% endif %}>{{ p }}</option>
             {% endfor %}
         </select>
-        <button class="btn">Filter</button>
+
+        <button class="btn" type="submit">Filter</button>
     </form>
     {% endif %}
 </div>
 
 <section class="panel">
-    {% include "_complaint_table.html" %}
+    <div id="complaintsTableBox">
+        {% include "_complaint_table.html" %}
+    </div>
 </section>
+
+<script>
+async function reloadComplaintsTable(url = window.location.href) {
+    try {
+        const response = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
+
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const newTable = doc.querySelector("#complaintsTableBox");
+        const currentTable = document.querySelector("#complaintsTableBox");
+
+        if (newTable && currentTable) {
+            currentTable.innerHTML = newTable.innerHTML;
+        }
+
+        if (typeof initLiveTimers === "function") {
+            initLiveTimers();
+        }
+
+    } catch (error) {
+        console.log("Table reload failed:", error);
+    }
+}
+
+const filterForm = document.getElementById("filterForm");
+
+if (filterForm) {
+    filterForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const params = new URLSearchParams(new FormData(filterForm));
+        const newUrl = window.location.pathname + "?" + params.toString();
+
+        history.pushState(null, "", newUrl);
+        reloadComplaintsTable(newUrl);
+    });
+
+    filterForm.querySelectorAll("select").forEach(select => {
+        select.addEventListener("change", function () {
+            filterForm.requestSubmit();
+        });
+    });
+}
+
+setInterval(() => reloadComplaintsTable(), 10000);
+</script>
+
 {% endblock %}

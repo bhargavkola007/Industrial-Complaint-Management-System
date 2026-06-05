@@ -2057,3 +2057,119 @@ main.container { padding-top: 3rem; padding-bottom: 4rem; }
     .success-actions .btn-submit,
     .success-actions .btn-secondary { width: 100%; justify-content: center; }
 }
+
+/* =============================================
+   ADDITIONS / UPDATES — append to style.css
+   Covers:
+     • .btn-primary (Live Sensors nav button)
+     • Live Sensor stat-card colour variants
+     • #updated_at display inside panel
+     • Sensor value pulse animation
+   ============================================= */
+
+/* ── Primary Button (amber filled, nav-level) ── */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
+    background: var(--clr-amber);
+    border: 1px solid var(--clr-amber);
+    border-radius: var(--radius);
+    color: #000;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--t), box-shadow var(--t), transform var(--t);
+    white-space: nowrap;
+}
+.btn-primary svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-primary:hover {
+    background: #fbbf24;
+    box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+    transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+
+
+/* ── Live Sensor Dashboard ── */
+
+/* Sensor value — mono tabular digits */
+.stat-card-num span[id] {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+    transition: color 0.3s ease;
+}
+
+/* Flash green briefly when a sensor value updates */
+@keyframes sensorFlash {
+    0%   { color: var(--clr-green); }
+    100% { color: inherit; }
+}
+.sensor-updated {
+    animation: sensorFlash 0.8s ease both;
+}
+
+/* Colour tint overrides for sensor cards */
+/* Temperature → red/warm tint */
+.stat-card-temp::before    { background: #f97316; }  /* orange */
+.stat-card-temp:hover      { border-color: #f97316; }
+
+/* Humidity → blue tint (reuses stat-accepted strip, explicit override) */
+.stat-card-humidity::before { background: var(--clr-blue); }
+.stat-card-humidity:hover   { border-color: var(--clr-blue); }
+
+/* IR Beam → purple tint (reuses stat-pending strip) */
+.stat-card-ir::before      { background: #a78bfa; }
+.stat-card-ir:hover        { border-color: #a78bfa; }
+
+/* Current → red/critical tint */
+.stat-card-current::before { background: var(--clr-red); }
+.stat-card-current:hover   { border-color: var(--clr-red); }
+
+
+/* ── Last-Updated panel body ── */
+/* The <p id="updated_at"> sits directly inside .panel with no .panel-body wrapper */
+.panel > p#updated_at {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--clr-text-muted);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    min-height: 44px;              /* prevents layout jump while "--" shows */
+    display: flex;
+    align-items: center;
+}
+.panel > p#updated_at::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--clr-green);
+    margin-right: 0.55rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+    animation: pulse 2s ease infinite;
+}
+
+
+/* ── IR Beam status text colours ── */
+/* Populated by JS: data.ir_beam is typically "Clear" | "Blocked" | "--"  */
+.ir-clear   { color: var(--clr-green); }
+.ir-blocked { color: var(--clr-red);   }
+
+
+/* ── Responsive tweaks for sensor grid ── */
+/* At narrow widths the 4-column auto-fit grid may go 2-col or 1-col
+   already handled by the existing stats-grid rule; no extra rules needed.
+   Below keeps the sensor nums readable on very small screens. */
+@media (max-width: 380px) {
+    .stat-card-num {
+        font-size: 1.6rem;
+    }
+}

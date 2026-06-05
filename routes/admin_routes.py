@@ -9,6 +9,10 @@ from models.forward_history import ForwardHistory
 from models.machine import Machine
 from .utils import role_required
 
+from flask import send_file
+from openpyxl import Workbook
+from io import BytesIO
+
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_bp.route("/dashboard")
@@ -106,3 +110,64 @@ def delete(id):
     db.session.commit()
     flash("Complaint deleted.", "info")
     return redirect(url_for("admin.complaints"))
+@admin_bp.route("/download-excel")
+@login_required
+@role_required("ADMIN")
+def download_excel():
+
+    complaints = Complaint.query.order_by(
+        Complaint.created_at.desc()
+    ).all()
+
+    wb = Workbook()
+    ws = wb.active
+
+    ws.title = "Complaints"
+
+    ws.append([
+        "Complaint ID",
+        "Employee Name",
+        "Employee ID",
+        "Department",
+        "Machine Name",
+        "Machine ID",
+        "Location",
+        "Problem Type",
+        "Priority",
+        "Status",
+        "Power Status",
+        "Fault Status",
+        "Created At",
+        "Accepted At",
+        "Resolved At"
+    ])
+
+    for c in complaints:
+        ws.append([
+            c.complaint_id,
+            c.employee_name,
+            c.employee_id,
+            c.department,
+            c.machine_name,
+            c.machine_id,
+            c.location,
+            c.problem_type,
+            c.priority,
+            c.status,
+            c.power_status,
+            c.fault_status,
+            str(c.created_at),
+            str(c.accepted_at),
+            str(c.resolved_at)
+        ])
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="Industrial_Complaints_Report.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )

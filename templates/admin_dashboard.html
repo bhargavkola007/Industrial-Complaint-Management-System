@@ -8,9 +8,18 @@
         <h1 class="dash-title">Dashboard</h1>
     </div>
     <div class="dash-header-actions">
-        <a href="{{ url_for('admin.complaints') }}" class="btn-outline">View All Complaints</a>
-        <a href="{{ url_for('sensor.live_sensors') }}" class="btn-primary">Live Sensors</a>
-    </div>
+    <a href="{{ url_for('admin.download_excel') }}" class="btn-primary">
+        Download Excel Report
+    </a>
+
+    <a href="{{ url_for('admin.complaints') }}" class="btn-outline">
+        View All Complaints
+    </a>
+
+    <a href="{{ url_for('sensor.live_sensors') }}" class="btn-primary">
+        Live Sensors
+    </a>
+</div>
 </div>
 
 <div class="stats-grid" role="list">

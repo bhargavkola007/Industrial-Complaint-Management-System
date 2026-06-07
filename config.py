@@ -4,7 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-this")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "industrial_cms_1029384756")
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",

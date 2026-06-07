@@ -8,7 +8,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
-        "mysql+pymysql://root:Amma%4001430@localhost:3306/industrial_complaint_db"
+        "mysql+pymysql://root:Amma%4001430@localhost:3306/industrial_complaint_db_itc"
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

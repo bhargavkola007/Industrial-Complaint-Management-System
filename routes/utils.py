@@ -2,7 +2,8 @@ from functools import wraps
 from flask import abort, current_app
 from flask_login import current_user
 from werkzeug.utils import secure_filename
-from pathlib import Path
+import cloudinary
+import cloudinary.uploader
 import uuid
 
 
@@ -38,25 +39,34 @@ def save_upload(file, kind):
 
     if kind == "image":
         allowed = cfg["ALLOWED_IMAGE_EXTENSIONS"]
-        folder = Path(cfg["IMAGE_UPLOAD_FOLDER"])
+        resource_type = "image"
+        folder = "industrial_complaints/images"
     else:
         allowed = cfg["ALLOWED_AUDIO_EXTENSIONS"]
-        folder = Path(cfg["AUDIO_UPLOAD_FOLDER"])
+        resource_type = "video"
+        folder = "industrial_complaints/audio"
 
     if not allowed_file(file.filename, allowed):
         raise ValueError(f"Invalid {kind} file type")
 
-    folder.mkdir(parents=True, exist_ok=True)
+    cloudinary.config(
+        cloud_name=cfg["CLOUDINARY_CLOUD_NAME"],
+        api_key=cfg["CLOUDINARY_API_KEY"],
+        api_secret=cfg["CLOUDINARY_API_SECRET"],
+        secure=True
+    )
 
     safe_name = secure_filename(file.filename)
-    unique_name = f"{uuid.uuid4().hex}_{safe_name}"
+    public_id = f"{uuid.uuid4().hex}_{safe_name.rsplit('.', 1)[0]}"
 
-    file.save(folder / unique_name)
+    result = cloudinary.uploader.upload(
+        file,
+        folder=folder,
+        public_id=public_id,
+        resource_type=resource_type
+    )
 
-    if kind == "image":
-        return f"images/{unique_name}"
-
-    return f"audio/{unique_name}"
+    return result.get("secure_url")
 
 
 def format_seconds(seconds):

@@ -1,6 +1,5 @@
 from fileinput import filename
-
-from flask import Flask, send_from_directory
+from flask import Flask
 from flask_login import LoginManager
 from pathlib import Path
 from routes.buzzer_routes import buzzer_bp
@@ -48,10 +47,6 @@ def create_app():
         app.register_blueprint(sensor_bp)
 
     app.jinja_env.filters["duration"] = format_seconds
-
-    @app.route("/uploads/<path:filename>")
-    def uploaded_file(filename):
-        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
     @app.after_request
     def add_no_cache_headers(response):

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-BUZZER_API_TOKEN = os.environ.get("BUZZER_API_TOKEN", "industrial-buzzer-123")
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-this")
 
@@ -13,11 +13,13 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", str(BASE_DIR / "static" / "uploads"))
-    IMAGE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "images")
-    AUDIO_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "audio")
-
     MAX_CONTENT_LENGTH = 12 * 1024 * 1024
+
     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
     ALLOWED_AUDIO_EXTENSIONS = {"mp3", "wav", "m4a", "ogg", "aac", "webm"}
-    
+
+    CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME")
+    CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
+    CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
+
+    BUZZER_API_TOKEN = os.environ.get("BUZZER_API_TOKEN", "industrial-buzzer-123")

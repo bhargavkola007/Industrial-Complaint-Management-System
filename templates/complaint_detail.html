@@ -104,13 +104,13 @@
                     <span class="evidence-label">Photo</span>
 
                     {% if complaint.photo_path %}
-                        <a href="{{ url_for('uploaded_file', filename=complaint.photo_path) }}" target="_blank" rel="noopener" class="evidence-img-wrap">
-                            <img src="{{ url_for('uploaded_file', filename=complaint.photo_path) }}" class="evidence-img" alt="Complaint photo evidence">
-                            <span class="evidence-overlay">View full</span>
-                        </a>
-                    {% else %}
-                        <div class="evidence-empty">No photo uploaded</div>
-                    {% endif %}
+                                <a href="{{ complaint.photo_path }}" target="_blank" rel="noopener" class="evidence-img-wrap">
+                                    <img src="{{ complaint.photo_path }}" class="evidence-img" alt="Complaint photo evidence">
+                                    <span class="evidence-overlay">View full</span>
+                                </a>
+                            {% else %}
+                                <div class="evidence-empty">No photo uploaded</div>
+                            {% endif %}
                 </div>
 
                 <div class="evidence-item">
@@ -118,7 +118,7 @@
 
                     {% if complaint.audio_path %}
                         <div class="audio-player-wrap">
-                            <audio controls src="{{ url_for('uploaded_file', filename=complaint.audio_path) }}" class="audio-player"></audio>
+                            <audio controls src="{{ complaint.audio_path }}" class="audio-player"></audio>
                         </div>
                     {% else %}
                         <div class="evidence-empty">No audio uploaded</div>

@@ -1,8 +1,6 @@
-from fileinput import filename
 from flask import Flask
 from flask_login import LoginManager
-from pathlib import Path
-from routes.buzzer_routes import buzzer_bp
+
 from config import Config
 from models import db
 from models.user import User
@@ -11,6 +9,7 @@ from routes.public_routes import public_bp
 from routes.auth_routes import auth_bp
 from routes.admin_routes import admin_bp
 from routes.operator_routes import operator_bp
+from routes.buzzer_routes import buzzer_bp
 from routes.utils import format_seconds
 
 try:
@@ -29,10 +28,6 @@ def create_app():
 
     app.config.setdefault("ALLOWED_IMAGE_EXTENSIONS", {"png", "jpg", "jpeg", "gif", "webp"})
     app.config.setdefault("ALLOWED_AUDIO_EXTENSIONS", {"mp3", "wav", "m4a", "ogg", "aac", "webm"})
-
-    Path(app.config["IMAGE_UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
-    Path(app.config["AUDIO_UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
-    Path("instance").mkdir(exist_ok=True)
 
     db.init_app(app)
     login_manager.init_app(app)

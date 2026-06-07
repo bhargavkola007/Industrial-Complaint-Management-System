@@ -1,7 +1,9 @@
-from flask import Flask
+from fileinput import filename
+
+from flask import Flask, send_from_directory
 from flask_login import LoginManager
 from pathlib import Path
-
+from routes.buzzer_routes import buzzer_bp
 from config import Config
 from models import db
 from models.user import User
@@ -12,7 +14,6 @@ from routes.admin_routes import admin_bp
 from routes.operator_routes import operator_bp
 from routes.utils import format_seconds
 
-# optional sensor route
 try:
     from routes.sensor_routes import sensor_bp
 except ImportError:
@@ -41,11 +42,16 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(operator_bp)
+    app.register_blueprint(buzzer_bp)
 
     if sensor_bp:
         app.register_blueprint(sensor_bp)
 
     app.jinja_env.filters["duration"] = format_seconds
+
+    @app.route("/uploads/<path:filename>")
+    def uploaded_file(filename):
+        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
     @app.after_request
     def add_no_cache_headers(response):

@@ -39,6 +39,35 @@
     {% endif %}
 </div>
 
+{% if not is_admin_list %}
+<section class="buzzer-panel">
+    {% if active_buzzer_count and active_buzzer_count > 0 %}
+        <div class="buzzer-alert-box buzzer-on">
+            <div>
+                <h2>🚨 Physical Buzzer Active</h2>
+                <p>
+                    {{ active_buzzer_count }} active complaint(s) in
+                    <strong>{{ current_user.department }}</strong> department.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('operator.stop_buzzer') }}">
+                <button type="submit" class="btn-action btn-action-danger">
+                    Stop Department Buzzer
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="buzzer-alert-box buzzer-off">
+            <div>
+                <h2>✅ Physical Buzzer Off</h2>
+                <p>No active buzzer alert in {{ current_user.department }} department.</p>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endif %}
+
 <section class="panel">
     <div id="complaintsTableBox">
         {% include "_complaint_table.html" %}
@@ -61,6 +90,13 @@ async function reloadComplaintsTable(url = window.location.href) {
 
         if (newTable && currentTable) {
             currentTable.innerHTML = newTable.innerHTML;
+        }
+
+        const newBuzzerPanel = doc.querySelector(".buzzer-panel");
+        const currentBuzzerPanel = document.querySelector(".buzzer-panel");
+
+        if (newBuzzerPanel && currentBuzzerPanel) {
+            currentBuzzerPanel.innerHTML = newBuzzerPanel.innerHTML;
         }
 
         if (typeof initLiveTimers === "function") {

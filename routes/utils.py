@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from pathlib import Path
 import uuid
 
+
 def role_required(*roles):
     def decorator(fn):
         @wraps(fn)
@@ -17,20 +18,24 @@ def role_required(*roles):
         return wrapper
     return decorator
 
+
 def operator_department_required(complaint):
     if current_user.role == "ADMIN":
         return
     if current_user.role != "OPERATOR" or current_user.department != complaint.department:
         abort(403)
 
+
 def allowed_file(filename, allowed_set):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed_set
+
 
 def save_upload(file, kind):
     if not file or file.filename == "":
         return None
 
     cfg = current_app.config
+
     if kind == "image":
         allowed = cfg["ALLOWED_IMAGE_EXTENSIONS"]
         folder = Path(cfg["IMAGE_UPLOAD_FOLDER"])
@@ -42,19 +47,25 @@ def save_upload(file, kind):
         raise ValueError(f"Invalid {kind} file type")
 
     folder.mkdir(parents=True, exist_ok=True)
+
     safe_name = secure_filename(file.filename)
     unique_name = f"{uuid.uuid4().hex}_{safe_name}"
+
     file.save(folder / unique_name)
 
     if kind == "image":
-        return f"uploads/images/{unique_name}"
-    return f"uploads/audio/{unique_name}"
+        return f"images/{unique_name}"
+
+    return f"audio/{unique_name}"
+
 
 def format_seconds(seconds):
     if seconds is None:
         return "-"
+
     seconds = int(seconds)
     h = seconds // 3600
     m = (seconds % 3600) // 60
     s = seconds % 60
+
     return f"{h:02d}:{m:02d}:{s:02d}"

@@ -2173,3 +2173,37 @@ main.container { padding-top: 3rem; padding-bottom: 4rem; }
         font-size: 1.6rem;
     }
 }
+
+.buzzer-panel {
+    margin-bottom: 20px;
+}
+
+.buzzer-alert-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.buzzer-alert-box h2 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+}
+
+.buzzer-alert-box p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.buzzer-on {
+    background: rgba(220, 38, 38, 0.18);
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+.buzzer-off {
+    background: rgba(22, 163, 74, 0.16);
+    border-color: rgba(74, 222, 128, 0.45);
+}

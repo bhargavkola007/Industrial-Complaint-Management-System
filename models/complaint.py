@@ -1,5 +1,18 @@
 from datetime import datetime
+
+try:
+    from zoneinfo import ZoneInfo   # Python 3.9+
+except ImportError:
+    from pytz import timezone as ZoneInfo   # Python 3.8 or below
+
 from . import db
+
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
+
+
+def now_india():
+    return datetime.now(INDIA_TZ).replace(tzinfo=None)
+
 
 class Complaint(db.Model):
     __tablename__ = "complaints"
@@ -19,7 +32,7 @@ class Complaint(db.Model):
     problem_type = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
     priority = db.Column(db.String(20), nullable=False, default="Medium")
-    communication_preference = db.Column(db.String(30), nullable=False, default="Message only")
+    communication_preference = db.Column(db.String(30), nullable=False, default="Buzzer Alert")
 
     photo_path = db.Column(db.String(255), nullable=True)
     audio_path = db.Column(db.String(255), nullable=True)
@@ -35,8 +48,10 @@ class Complaint(db.Model):
     admin_remarks = db.Column(db.Text, nullable=True)
     operator_remarks = db.Column(db.Text, nullable=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    buzzer_active = db.Column(db.Boolean, nullable=False, default=True)
+
+    created_at = db.Column(db.DateTime, default=now_india)
+    updated_at = db.Column(db.DateTime, default=now_india, onupdate=now_india)
 
     accepted_user = db.relationship("User", foreign_keys=[accepted_by])
 

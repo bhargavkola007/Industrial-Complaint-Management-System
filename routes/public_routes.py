@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from datetime import datetime
 import uuid
 
 from models import db
@@ -15,17 +14,22 @@ DEPARTMENTS = {
     "supervisor": "Supervisor",
 }
 
+
 @public_bp.route("/")
 def index():
     return render_template("index.html")
 
+
 @public_bp.route("/complaint/<department>")
 def complaint_form(department):
     department_name = DEPARTMENTS.get(department.lower())
+
     if not department_name:
         flash("Invalid department selected.", "danger")
         return redirect(url_for("public.index"))
+
     return render_template("complaint_form.html", department=department_name)
+
 
 @public_bp.route("/submit-complaint", methods=["POST"])
 def submit_complaint():
@@ -53,15 +57,17 @@ def submit_complaint():
             problem_type=problem_type,
             description=request.form.get("description"),
             priority=request.form.get("priority"),
-            communication_preference=request.form.get("communication_preference"),
+            communication_preference="Buzzer Alert",
             photo_path=photo_path,
             audio_path=audio_path,
             status="Pending",
             power_status=power_status,
             fault_status="Fault Detected",
+            buzzer_active=True,
         )
 
         machine = Machine.query.filter_by(machine_id=machine_id).first()
+
         if not machine:
             machine = Machine(
                 machine_name=complaint.machine_name,
@@ -79,23 +85,19 @@ def submit_complaint():
         db.session.add(complaint)
         db.session.commit()
 
-        alert = f"SMS sent to {department} Department"
-        if complaint.communication_preference == "Call only":
-            alert = "Call alert requested"
-        elif complaint.communication_preference == "Both call and message":
-            alert = f"SMS and call alert sent to Admin and {department} Department Operator"
-
-        flash(alert, "success")
+        flash(f"Physical buzzer activated in {department} Department.", "success")
         return redirect(url_for("public.success", complaint_id=complaint.complaint_id))
 
     except ValueError as e:
         db.session.rollback()
         flash(str(e), "danger")
         return redirect(request.referrer or url_for("public.index"))
-    except Exception as e:
+
+    except Exception:
         db.session.rollback()
         flash("Complaint submission failed. Please check all fields and file sizes.", "danger")
         return redirect(request.referrer or url_for("public.index"))
+
 
 @public_bp.route("/success/<complaint_id>")
 def success(complaint_id):

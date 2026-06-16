@@ -18,7 +18,7 @@
     </p>
     <div class="hero-stats" aria-label="System statistics">
         <div class="stat-item">
-            <span class="stat-number">3</span>
+            <span class="stat-number">9</span>
             <span class="stat-label">Departments</span>
         </div>
         <div class="stat-divider" aria-hidden="true"></div>
@@ -42,6 +42,7 @@
 
     <div class="department-grid" role="list">
 
+        {# ── 1. Electrical ── #}
         <a class="dept-card dept-electrical" href="{{ url_for('public.complaint_form', department='electrical') }}" role="listitem">
             <div class="dept-card-inner">
                 <div class="dept-icon-wrap" aria-hidden="true">
@@ -58,6 +59,12 @@
                     <span>Sensor Signal</span>
                     <span>Motor Starter</span>
                 </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.electrical }}</span>
+                    <span class="dept-stat-lbl">open complaints</span>
+                </div>
+                {% endif %}
                 <div class="dept-cta" aria-hidden="true">
                     File Complaint
                     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
@@ -65,6 +72,7 @@
             </div>
         </a>
 
+        {# ── 2. Mechanical ── #}
         <a class="dept-card dept-mechanical" href="{{ url_for('public.complaint_form', department='mechanical') }}" role="listitem">
             <div class="dept-card-inner">
                 <div class="dept-icon-wrap" aria-hidden="true">
@@ -82,6 +90,12 @@
                     <span>Bearing</span>
                     <span>Leakage</span>
                 </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.mechanical }}</span>
+                    <span class="dept-stat-lbl">open complaints</span>
+                </div>
+                {% endif %}
                 <div class="dept-cta" aria-hidden="true">
                     File Complaint
                     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
@@ -89,6 +103,7 @@
             </div>
         </a>
 
+        {# ── 3. Supervisor ── #}
         <a class="dept-card dept-supervisor" href="{{ url_for('public.complaint_form', department='supervisor') }}" role="listitem">
             <div class="dept-card-inner">
                 <div class="dept-icon-wrap" aria-hidden="true">
@@ -106,8 +121,204 @@
                     <span>Coordination</span>
                     <span>Escalation</span>
                 </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.supervisor }}</span>
+                    <span class="dept-stat-lbl">open complaints</span>
+                </div>
+                {% endif %}
                 <div class="dept-cta" aria-hidden="true">
                     File Complaint
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 4. ICS Compliance ── #}
+        <a class="dept-card dept-ics" href="{{ url_for('public.complaint_form', department='ics_compliance') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <path d="M20 4L6 10v10c0 8.284 5.999 16.02 14 18 8.001-1.98 14-9.716 14-18V10L20 4z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                        <path d="M14 20l4 4 8-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">ICS Compliance</div>
+                <h3 class="dept-title">ICS<br>Compliance</h3>
+                <p class="dept-desc">Industrial Control System audits, deviation reports, control loop failures, and SOP non-compliance.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Audit</span>
+                    <span>Control Loop</span>
+                    <span>SOP Deviation</span>
+                    <span>PLC Fault</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.ics_compliance }}</span>
+                    <span class="dept-stat-lbl">open reports</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    File Report
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 5. EHS Observation ── #}
+        <a class="dept-card dept-ehs" href="{{ url_for('public.complaint_form', department='ehs_observation') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <path d="M20 6C12 6 6 20 6 20s6 14 14 14 14-14 14-14S28 6 20 6z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                        <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">EHS</div>
+                <h3 class="dept-title">EHS<br>Observation</h3>
+                <p class="dept-desc">Environment, Health &amp; Safety near-misses, hazard observations, PPE violations, and incident reporting.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Near-miss</span>
+                    <span>PPE</span>
+                    <span>Hazard</span>
+                    <span>Incident</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.ehs_observation }}</span>
+                    <span class="dept-stat-lbl">open observations</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    Log Observation
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 6. Maintenance Feedback ── #}
+        <a class="dept-card dept-maintenance" href="{{ url_for('public.complaint_form', department='maintenance_feedback') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <path d="M30 10a8 8 0 00-11.314 0L8 20.686 19.314 32A8 8 0 0030 20.686V10z" fill="currentColor" opacity=".2"/>
+                        <path d="M10 30l6-6M28 8l2 2-14 14-2-2L28 8z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="10" cy="30" r="3" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Maintenance</div>
+                <h3 class="dept-title">Maintenance<br>Feedback</h3>
+                <p class="dept-desc">Post-maintenance feedback, recurring faults, missed PM schedules, and technician response quality issues.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>PM Schedule</span>
+                    <span>Recurring Fault</span>
+                    <span>Response Time</span>
+                    <span>Work Quality</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.maintenance_feedback }}</span>
+                    <span class="dept-stat-lbl">open feedback</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    Submit Feedback
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 7. 5S Compliance ── #}
+        <a class="dept-card dept-5s" href="{{ url_for('public.complaint_form', department='5s_compliance') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <rect x="6" y="8" width="28" height="4" rx="2" fill="currentColor"/>
+                        <rect x="6" y="18" width="20" height="4" rx="2" fill="currentColor" opacity=".6"/>
+                        <rect x="6" y="28" width="24" height="4" rx="2" fill="currentColor" opacity=".3"/>
+                        <path d="M30 20l4 4-4 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">5S Compliance</div>
+                <h3 class="dept-title">5S<br>Compliance</h3>
+                <p class="dept-desc">Sort, Set, Shine, Standardize, Sustain — report 5S violations, workplace disorganization, and audit failures.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Sort</span>
+                    <span>Shine</span>
+                    <span>Standardize</span>
+                    <span>Audit Fail</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats['5s_compliance'] }}</span>
+                    <span class="dept-stat-lbl">open reports</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    File Report
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 8. Sensor Checklist ── #}
+        <a class="dept-card dept-sensor" href="{{ url_for('public.complaint_form', department='sensor_checklist') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <circle cx="20" cy="20" r="5" fill="currentColor"/>
+                        <path d="M9 20a11 11 0 0022 0M9 20a11 11 0 0122 0" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M4 20h4M32 20h4M20 4v4M20 32v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Sensor Checklist</div>
+                <h3 class="dept-title">Sensor<br>Checklist</h3>
+                <p class="dept-desc">Sensor calibration, signal drift, response time failures, and periodic sensor health verification.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Calibration</span>
+                    <span>Signal Drift</span>
+                    <span>Response Time</span>
+                    <span>Health Check</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.sensor_checklist }}</span>
+                    <span class="dept-stat-lbl">pending checks</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    Run Checklist
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+            </div>
+        </a>
+
+        {# ── 9. Startup Checklist ── #}
+        <a class="dept-card dept-startup" href="{{ url_for('public.complaint_form', department='startup_checklist') }}" role="listitem">
+            <div class="dept-card-inner">
+                <div class="dept-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="dept-icon">
+                        <path d="M16 8l-4 12h8l-4 12 16-16H20L24 8H16z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                        <path d="M14 20l4 4 8-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dept-tag">Startup</div>
+                <h3 class="dept-title">Startup<br>Checklist</h3>
+                <p class="dept-desc">Machine startup verification, pre-shift inspection, interlock checks, and readiness sign-offs before production.</p>
+                <div class="dept-tags-list" aria-label="Covers">
+                    <span>Pre-shift</span>
+                    <span>Interlock</span>
+                    <span>Sign-off</span>
+                    <span>Readiness</span>
+                </div>
+                {% if complaint_stats %}
+                <div class="dept-stat">
+                    <span class="dept-stat-num">{{ complaint_stats.startup_checklist }}</span>
+                    <span class="dept-stat-lbl">pending sign-offs</span>
+                </div>
+                {% endif %}
+                <div class="dept-cta" aria-hidden="true">
+                    Begin Checklist
                     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
                 </div>
             </div>

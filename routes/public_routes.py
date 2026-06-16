@@ -12,6 +12,12 @@ DEPARTMENTS = {
     "electrical": "Electrical",
     "mechanical": "Mechanical",
     "supervisor": "Supervisor",
+    "ics_compliance": "ICS Compliance",
+    "ehs_observation": "EHS Observation",
+    "maintenance_feedback": "Maintenance Feedback",
+    "5s_compliance": "5S Compliance",
+    "sensor_checklist": "Sensor Checklist",
+    "startup_checklist": "Startup Checklist",
 }
 
 
@@ -22,41 +28,61 @@ def index():
 
 @public_bp.route("/complaint/<department>")
 def complaint_form(department):
-    department_name = DEPARTMENTS.get(department.lower())
+    department_key = department.lower()
 
-    if not department_name:
+    if department_key not in DEPARTMENTS:
         flash("Invalid department selected.", "danger")
         return redirect(url_for("public.index"))
 
-    return render_template("complaint_form.html", department=department_name)
+    return render_template(
+        "complaint_form.html",
+        department=department_key
+    )
 
 
 @public_bp.route("/submit-complaint", methods=["POST"])
 def submit_complaint():
     try:
-        department = request.form.get("department")
-        machine_id = request.form.get("machine_id", "").strip()
-        problem_type = request.form.get("problem_type", "")
+        department = request.form.get("department", "").strip()
+        machine_id = request.form.get("machine_id", "N/A").strip() or "N/A"
+        machine_name = request.form.get("machine_name", "N/A").strip() or "N/A"
+        problem_type = request.form.get("problem_type", "General Report").strip() or "General Report"
+
+        description = request.form.get("description", "").strip()
+        extra_desc = request.form.get("extra_desc", "").strip()
+
+        if extra_desc:
+            description = f"{description}\n\nAdditional Details:\n{extra_desc}"
+        elif not description:
+            description = "No extra description"
 
         photo_path = save_upload(request.files.get("photo"), "image")
         audio_path = save_upload(request.files.get("audio"), "audio")
 
         power_status = "LOW"
-        if "off" in problem_type.lower() or "failure" in problem_type.lower():
+        problem_lower = problem_type.lower()
+
+        if (
+            "off" in problem_lower
+            or "failure" in problem_lower
+            or "dead" in problem_lower
+            or "not working" in problem_lower
+            or "power supply" in problem_lower
+        ):
             power_status = "OFF"
 
         complaint = Complaint(
             complaint_id="CMP-" + uuid.uuid4().hex[:8].upper(),
             employee_name=request.form.get("employee_name"),
-            employee_id=request.form.get("employee_id"),
+            employee_id=request.form.get("employee_id", "N/A"),
             employee_phone=request.form.get("employee_phone"),
             department=department,
-            machine_name=request.form.get("machine_name"),
+            machine_name=machine_name,
             machine_id=machine_id,
             location=request.form.get("location"),
             problem_type=problem_type,
-            description=request.form.get("description"),
-            priority=request.form.get("priority"),
+            description=description,
+            priority=request.form.get("priority", "Medium"),
             communication_preference="Buzzer Alert",
             photo_path=photo_path,
             audio_path=audio_path,
@@ -70,13 +96,14 @@ def submit_complaint():
 
         if not machine:
             machine = Machine(
-                machine_name=complaint.machine_name,
+                machine_name=machine_name,
                 machine_id=machine_id,
                 department=department,
                 location=complaint.location,
             )
             db.session.add(machine)
 
+        machine.machine_name = machine_name
         machine.power_status = power_status
         machine.fault_status = "Fault Detected"
         machine.department = department
@@ -85,7 +112,7 @@ def submit_complaint():
         db.session.add(complaint)
         db.session.commit()
 
-        flash(f"Physical buzzer activated in {department} Department.", "success")
+        flash(f"Report submitted successfully. Physical buzzer activated.", "success")
         return redirect(url_for("public.success", complaint_id=complaint.complaint_id))
 
     except ValueError as e:
@@ -93,8 +120,9 @@ def submit_complaint():
         flash(str(e), "danger")
         return redirect(request.referrer or url_for("public.index"))
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        print("SUBMIT ERROR:", e)
         flash("Complaint submission failed. Please check all fields and file sizes.", "danger")
         return redirect(request.referrer or url_for("public.index"))
 

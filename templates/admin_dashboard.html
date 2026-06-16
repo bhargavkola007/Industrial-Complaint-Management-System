@@ -65,11 +65,29 @@
         <h2 class="panel-title">Department Breakdown</h2>
     </div>
 
+    {% set departments = [
+        ('electrical', 'Electrical'),
+        ('mechanical', 'Mechanical'),
+        ('supervisor', 'Supervisor'),
+        ('ics_compliance', 'ICS Compliance'),
+        ('ehs_observation', 'EHS Observation'),
+        ('maintenance_feedback', 'Maintenance Feedback'),
+        ('5s_compliance', '5S Compliance'),
+        ('sensor_checklist', 'Sensor Checklist'),
+        ('startup_checklist', 'Startup Checklist')
+    ] %}
+
     <div class="dept-breakdown">
-        {% for dept in ['Electrical', 'Mechanical', 'Supervisor'] %}
-        <a href="{{ url_for('admin.complaints', department=dept) }}" class="dept-mini dept-mini-{{ dept|lower }}">
-            <span class="dept-mini-name">{{ dept }}</span>
-            <strong class="dept-mini-count">{{ dept_counts.get(dept, 0) }}</strong>
+        {% for dept_key, dept_name in departments %}
+        <a href="{{ url_for('admin.complaints', department=dept_key) }}"
+           class="dept-mini dept-mini-{{ dept_key }}">
+            
+            <span class="dept-mini-name">{{ dept_name }}</span>
+
+            <strong class="dept-mini-count">
+                {{ dept_counts.get(dept_key, 0) }}
+            </strong>
+
             <span class="dept-mini-arrow">→</span>
         </a>
         {% endfor %}

@@ -2,10 +2,12 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from datetime import datetime
+
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
     from pytz import timezone as ZoneInfo
+
 from openpyxl import Workbook
 from io import BytesIO
 
@@ -29,6 +31,19 @@ def to_india_time(dt):
     if not dt:
         return ""
     return dt.strftime("%d-%m-%Y %I:%M:%S %p")
+
+
+DEPARTMENTS = {
+    "electrical": "Electrical",
+    "mechanical": "Mechanical",
+    "supervisor": "Supervisor",
+    "ics_compliance": "ICS Compliance",
+    "ehs_observation": "EHS Observation",
+    "maintenance_feedback": "Maintenance Feedback",
+    "5s_compliance": "5S Compliance",
+    "sensor_checklist": "Sensor Checklist",
+    "startup_checklist": "Startup Checklist",
+}
 
 
 @admin_bp.route("/dashboard")
@@ -56,6 +71,9 @@ def dashboard():
 
     dept_counts = dict(dept_rows)
 
+    for dept_key in DEPARTMENTS.keys():
+        dept_counts.setdefault(dept_key, 0)
+
     resolved = Complaint.query.filter(Complaint.resolved_at.isnot(None)).all()
 
     avg_seconds = None
@@ -73,6 +91,7 @@ def dashboard():
         dept_counts=dept_counts,
         avg_seconds=avg_seconds,
         complaints=latest,
+        departments=DEPARTMENTS,
     )
 
 
@@ -101,6 +120,7 @@ def complaints():
         "operator_dashboard.html",
         complaints=complaints,
         is_admin_list=True,
+        departments=DEPARTMENTS,
     )
 
 
@@ -115,6 +135,7 @@ def complaint_detail(id):
         "complaint_detail.html",
         complaint=complaint,
         machine=machine,
+        departments=DEPARTMENTS,
     )
 
 
@@ -160,6 +181,7 @@ def forward(id):
     complaint.status = "Pending"
     complaint.accepted_by = None
     complaint.accepted_at = None
+    complaint.buzzer_active = True
 
     db.session.add(history)
     db.session.commit()
@@ -195,15 +217,18 @@ def download_excel():
         "Complaint ID",
         "Employee Name",
         "Employee ID",
+        "Phone",
         "Department",
         "Machine Name",
         "Machine ID",
         "Location",
         "Problem Type",
+        "Description",
         "Priority",
         "Status",
         "Power Status",
         "Fault Status",
+        "Buzzer Active",
         "Created At",
         "Accepted At",
         "Resolved At",
@@ -214,15 +239,18 @@ def download_excel():
             c.complaint_id,
             c.employee_name,
             c.employee_id,
-            c.department,
+            c.employee_phone,
+            DEPARTMENTS.get(c.department, c.department),
             c.machine_name,
             c.machine_id,
             c.location,
             c.problem_type,
+            c.description,
             c.priority,
             c.status,
             c.power_status,
             c.fault_status,
+            "Yes" if c.buzzer_active else "No",
             to_india_time(c.created_at),
             to_india_time(c.accepted_at),
             to_india_time(c.resolved_at),

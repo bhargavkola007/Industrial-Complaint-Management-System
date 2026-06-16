@@ -1,14 +1,45 @@
 {% extends "base.html" %}
-{% block title %}{{ department }} Complaint — Industrial CMS{% endblock %}
+{% block title %}{{ department|replace('_',' ')|title }} — Industrial CMS{% endblock %}
 {% block content %}
 
 <div class="form-page">
 
     <div class="form-page-header">
         <a href="{{ url_for('public.index') }}" class="back-link">← Back</a>
-        <div class="form-dept-badge dept-badge-{{ department|lower }}">{{ department }}</div>
-        <h1 class="form-page-title">{{ department }} Complaint Form</h1>
-        <p class="form-page-sub">Submit machine complaint quickly.</p>
+        <div class="form-dept-badge dept-badge-{{ department|lower|replace(' ','_') }}">
+            {% if department == 'electrical' %}Electrical
+            {% elif department == 'mechanical' %}Mechanical
+            {% elif department == 'supervisor' %}Supervisor
+            {% elif department == 'ics_compliance' %}ICS Compliance
+            {% elif department == 'ehs_observation' %}EHS
+            {% elif department == 'maintenance_feedback' %}Maintenance
+            {% elif department == '5s_compliance' %}5S Compliance
+            {% elif department == 'sensor_checklist' %}Sensor Checklist
+            {% elif department == 'startup_checklist' %}Startup
+            {% endif %}
+        </div>
+        <h1 class="form-page-title">
+            {% if department == 'electrical' %}Electrical Complaint
+            {% elif department == 'mechanical' %}Mechanical Complaint
+            {% elif department == 'supervisor' %}Supervisor Complaint
+            {% elif department == 'ics_compliance' %}ICS Compliance Report
+            {% elif department == 'ehs_observation' %}EHS Observation
+            {% elif department == 'maintenance_feedback' %}Maintenance Feedback
+            {% elif department == '5s_compliance' %}5S Compliance Report
+            {% elif department == 'sensor_checklist' %}Sensor Checklist
+            {% elif department == 'startup_checklist' %}Startup Checklist
+            {% endif %}
+        </h1>
+        <p class="form-page-sub">
+            {% if department in ['electrical','mechanical','supervisor'] %}Submit machine complaint quickly.
+            {% elif department == 'ics_compliance' %}Report ICS deviations, audit findings, and control loop issues.
+            {% elif department == 'ehs_observation' %}Log safety observations, near-misses, and hazards.
+            {% elif department == 'maintenance_feedback' %}Provide feedback on completed maintenance work.
+            {% elif department == '5s_compliance' %}Report 5S violations and workplace disorganisation.
+            {% elif department == 'sensor_checklist' %}Complete periodic sensor health verification.
+            {% elif department == 'startup_checklist' %}Complete pre-shift machine startup sign-off.
+            {% endif %}
+        </p>
     </div>
 
     <form method="POST" action="{{ url_for('public.submit_complaint') }}" enctype="multipart/form-data" class="complaint-form" id="complaintForm">
@@ -19,15 +50,17 @@
         <input type="hidden" name="priority" value="Medium">
         <input type="hidden" name="description" id="description" value="No extra description">
 
+        {# ═══════════════════════════════════════════════════
+           SECTION 01 — Reporter Details (all departments)
+           ═══════════════════════════════════════════════════ #}
         <div class="form-section">
             <div class="form-section-header">
                 <span class="section-num">01</span>
                 <div>
-                    <h2 class="form-section-title">Complaint Details</h2>
-                    <p class="form-section-sub">Enter employee details, select location, machine and issue.</p>
+                    <h2 class="form-section-title">Reporter Details</h2>
+                    <p class="form-section-sub">Your name, contact, and work location.</p>
                 </div>
             </div>
-
             <div class="form-grid">
 
                 <div class="field">
@@ -58,6 +91,25 @@
                     </select>
                 </div>
 
+            </div>
+        </div>
+
+        {# ═══════════════════════════════════════════════════
+           SECTION 02 — Department-specific fields
+           ═══════════════════════════════════════════════════ #}
+
+        {# ── ELECTRICAL ── #}
+        {% if department == 'electrical' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Complaint Details</h2>
+                    <p class="form-section-sub">Select machine and describe the electrical issue.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
                 <div class="field">
                     <label class="field-label" for="machine_name">Machine *</label>
                     <select class="field-input field-select" id="machine_name" name="machine_name" required>
@@ -69,16 +121,543 @@
                     <label class="field-label" for="problem_type">Issue *</label>
                     <select class="field-input field-select" id="problem_type" name="problem_type" required>
                         <option value="" disabled selected>Select Issue</option>
-                        <option value="Machine not working">Machine not working</option>
-                        <option value="Sensor problem">Sensor problem</option>
-                        <option value="Power issue">Power issue</option>
-                        <option value="Motor problem">Motor problem</option>
-                        <option value="Material jam">Material jam</option>
-                        <option value="Air pressure issue">Air pressure issue</option>
-                        <option value="Abnormal sound">Abnormal sound</option>
-                        <option value="Conveyor problem">Conveyor problem</option>
-                        <option value="Emergency breakdown">Emergency breakdown</option>
-                        <option value="Other">Other</option>
+                        <option>Power supply failure</option>
+                        <option>Wiring fault</option>
+                        <option>Sensor signal loss</option>
+                        <option>Motor starter fault</option>
+                        <option>Panel trip / MCB trip</option>
+                        <option>Earth leakage</option>
+                        <option>Voltage fluctuation</option>
+                        <option>Control panel alarm</option>
+                        <option>Cable damage</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="elec_voltage">Voltage at fault (V)</label>
+                    <input class="field-input" type="number" id="elec_voltage" name="elec_voltage" placeholder="e.g. 415">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="elec_panel_id">Panel / DB Reference</label>
+                    <input class="field-input" type="text" id="elec_panel_id" name="elec_panel_id" placeholder="e.g. DB-01">
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Additional Description</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe the fault in detail…"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── MECHANICAL ── #}
+        {% elif department == 'mechanical' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Complaint Details</h2>
+                    <p class="form-section-sub">Select machine and describe the mechanical fault.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine *</label>
+                    <select class="field-input field-select" id="machine_name" name="machine_name" required>
+                        <option value="" disabled selected>Select Machine</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Issue *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Issue</option>
+                        <option>Machine not working</option>
+                        <option>Abnormal vibration</option>
+                        <option>Bearing failure</option>
+                        <option>Alignment issue</option>
+                        <option>Oil / fluid leakage</option>
+                        <option>Material jam</option>
+                        <option>Conveyor problem</option>
+                        <option>Air pressure issue</option>
+                        <option>Abnormal sound / noise</option>
+                        <option>Emergency breakdown</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="mech_part">Affected Component</label>
+                    <input class="field-input" type="text" id="mech_part" name="mech_part" placeholder="e.g. Drive shaft, Belt, Bearing">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="mech_severity">Severity</label>
+                    <select class="field-input field-select" id="mech_severity" name="mech_severity">
+                        <option value="" disabled selected>Select Severity</option>
+                        <option>Minor — can continue</option>
+                        <option>Moderate — reduced output</option>
+                        <option>Critical — machine stopped</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Additional Description</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe the fault in detail…"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── SUPERVISOR ── #}
+        {% elif department == 'supervisor' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Complaint Details</h2>
+                    <p class="form-section-sub">Describe the supervisory issue or escalation.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine / Area *</label>
+                    <select class="field-input field-select" id="machine_name" name="machine_name" required>
+                        <option value="" disabled selected>Select Machine / Area</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Issue Type *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Issue</option>
+                        <option>Safety violation</option>
+                        <option>Failed inspection</option>
+                        <option>Coordination breakdown</option>
+                        <option>Production stoppage</option>
+                        <option>Escalation required</option>
+                        <option>Shift handover issue</option>
+                        <option>SOP not followed</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="sup_supervisor_name">Supervisor Name</label>
+                    <input class="field-input" type="text" id="sup_supervisor_name" name="sup_supervisor_name" placeholder="Name of supervisor involved">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="sup_shift">Shift</label>
+                    <select class="field-input field-select" id="sup_shift" name="sup_shift">
+                        <option value="" disabled selected>Select Shift</option>
+                        <option>Morning (06:00–14:00)</option>
+                        <option>Afternoon (14:00–22:00)</option>
+                        <option>Night (22:00–06:00)</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Description *</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe the issue clearly…" required></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── ICS COMPLIANCE ── #}
+        {% elif department == 'ics_compliance' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">ICS Compliance Details</h2>
+                    <p class="form-section-sub">Control system, deviation type, and affected loop.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="ics_system_id">Control System / PLC ID *</label>
+                    <input class="field-input" type="text" id="ics_system_id" name="ics_system_id" required placeholder="e.g. PLC-01, SCADA-A">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ics_loop_id">Control Loop / Tag ID</label>
+                    <input class="field-input" type="text" id="ics_loop_id" name="ics_loop_id" placeholder="e.g. FIC-101, TIC-202">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Deviation Type *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option>SOP non-compliance</option>
+                        <option>Control loop failure</option>
+                        <option>PLC fault / alarm</option>
+                        <option>Setpoint deviation</option>
+                        <option>Communication failure</option>
+                        <option>Audit finding</option>
+                        <option>Unauthorised parameter change</option>
+                        <option>Emergency shutdown triggered</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ics_sop_ref">SOP Reference No.</label>
+                    <input class="field-input" type="text" id="ics_sop_ref" name="ics_sop_ref" placeholder="e.g. SOP-ENG-045">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ics_severity">Severity *</label>
+                    <select class="field-input field-select" id="ics_severity" name="ics_severity" required>
+                        <option value="" disabled selected>Select Severity</option>
+                        <option>Low — observation only</option>
+                        <option>Medium — process affected</option>
+                        <option>High — production impacted</option>
+                        <option>Critical — safety risk</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ics_detected_by">Detected By</label>
+                    <select class="field-input field-select" id="ics_detected_by" name="ics_detected_by">
+                        <option value="" disabled selected>Select Method</option>
+                        <option>Routine audit</option>
+                        <option>Alarm system</option>
+                        <option>Operator observation</option>
+                        <option>Scheduled inspection</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Deviation Description *</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe the deviation or finding in detail…" required></textarea>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="ics_immediate_action">Immediate Action Taken</label>
+                    <textarea class="field-input field-textarea" id="ics_immediate_action" name="ics_immediate_action" rows="2" placeholder="Any corrective action already applied…"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── EHS OBSERVATION ── #}
+        {% elif department == 'ehs_observation' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">EHS Observation Details</h2>
+                    <p class="form-section-sub">Type of observation, hazard, and people involved.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Observation Type *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option>Near-miss</option>
+                        <option>Unsafe act</option>
+                        <option>Unsafe condition</option>
+                        <option>PPE violation</option>
+                        <option>Environmental spill / leak</option>
+                        <option>Fire / explosion risk</option>
+                        <option>Electrical hazard</option>
+                        <option>Ergonomics issue</option>
+                        <option>First aid incident</option>
+                        <option>Lost time injury</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ehs_area">Area / Zone *</label>
+                    <select class="field-input field-select" id="ehs_area" name="ehs_area" required>
+                        <option value="" disabled selected>Select Area</option>
+                        <option value="PMD">PMD</option>
+                        <option value="SMD">SMD</option>
+                        <option value="Production Floor">Production Floor</option>
+                        <option value="Packing Area">Packing Area</option>
+                        <option value="Utility Area">Utility Area</option>
+                        <option value="Maintenance Room">Maintenance Room</option>
+                        <option value="Walkway / Corridor">Walkway / Corridor</option>
+                        <option value="Chemical Storage">Chemical Storage</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ehs_persons_involved">No. of Persons Involved</label>
+                    <input class="field-input" type="number" id="ehs_persons_involved" name="ehs_persons_involved" min="0" placeholder="0">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ehs_ppe_worn">PPE Worn at Time</label>
+                    <select class="field-input field-select" id="ehs_ppe_worn" name="ehs_ppe_worn">
+                        <option value="" disabled selected>Select</option>
+                        <option>Full PPE worn</option>
+                        <option>Partial PPE worn</option>
+                        <option>No PPE worn</option>
+                        <option>PPE not required</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ehs_body_part">Body Part Affected</label>
+                    <select class="field-input field-select" id="ehs_body_part" name="ehs_body_part">
+                        <option value="" disabled selected>Select (if applicable)</option>
+                        <option>Head</option>
+                        <option>Eyes</option>
+                        <option>Hand / fingers</option>
+                        <option>Arm</option>
+                        <option>Foot / toes</option>
+                        <option>Leg</option>
+                        <option>Back</option>
+                        <option>Chest</option>
+                        <option>None / no injury</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="ehs_risk_level">Risk Level *</label>
+                    <select class="field-input field-select" id="ehs_risk_level" name="ehs_risk_level" required>
+                        <option value="" disabled selected>Select Risk Level</option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                        <option>Critical</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Observation Description *</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe what you observed clearly and factually…" required></textarea>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="ehs_corrective_action">Immediate Action Taken</label>
+                    <textarea class="field-input field-textarea" id="ehs_corrective_action" name="ehs_corrective_action" rows="2" placeholder="Any immediate corrective action taken…"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── MAINTENANCE FEEDBACK ── #}
+        {% elif department == 'maintenance_feedback' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Maintenance Feedback Details</h2>
+                    <p class="form-section-sub">Work order, technician, and quality of work done.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="mf_work_order">Work Order No. *</label>
+                    <input class="field-input" type="text" id="mf_work_order" name="mf_work_order" required placeholder="e.g. WO-2024-0042">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine / Equipment *</label>
+                    <select class="field-input field-select" id="machine_name" name="machine_name" required>
+                        <option value="" disabled selected>Select Machine</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="mf_technician">Technician Name *</label>
+                    <input class="field-input" type="text" id="mf_technician" name="mf_technician" required placeholder="Name of technician who did the work">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Feedback Type *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option>Work quality poor</option>
+                        <option>Job incomplete</option>
+                        <option>Recurring fault after repair</option>
+                        <option>PM schedule missed</option>
+                        <option>Slow response time</option>
+                        <option>Wrong spare part used</option>
+                        <option>Safety not followed during repair</option>
+                        <option>Positive feedback</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="mf_response_time">Response Time</label>
+                    <select class="field-input field-select" id="mf_response_time" name="mf_response_time">
+                        <option value="" disabled selected>Was response time acceptable?</option>
+                        <option>Within SLA — acceptable</option>
+                        <option>Slightly delayed</option>
+                        <option>Significantly delayed</option>
+                        <option>No response yet</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="mf_rating">Work Quality Rating *</label>
+                    <select class="field-input field-select" id="mf_rating" name="mf_rating" required>
+                        <option value="" disabled selected>Select Rating</option>
+                        <option value="5">5 — Excellent</option>
+                        <option value="4">4 — Good</option>
+                        <option value="3">3 — Acceptable</option>
+                        <option value="2">2 — Poor</option>
+                        <option value="1">1 — Very Poor</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Feedback Details *</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe the issue with the maintenance work…" required></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── 5S COMPLIANCE ── #}
+        {% elif department == '5s_compliance' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">5S Compliance Details</h2>
+                    <p class="form-section-sub">Which S was violated, area, and what was found.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">5S Pillar Violated *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Pillar</option>
+                        <option>Sort (Seiri) — unnecessary items present</option>
+                        <option>Set in Order (Seiton) — items not in designated place</option>
+                        <option>Shine (Seiso) — area unclean or untidy</option>
+                        <option>Standardise (Seiketsu) — standards not followed</option>
+                        <option>Sustain (Shitsuke) — audit / discipline failure</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="fives_area">Area / Zone *</label>
+                    <select class="field-input field-select" id="fives_area" name="fives_area" required>
+                        <option value="" disabled selected>Select Area</option>
+                        <option>PMD</option>
+                        <option>SMD</option>
+                        <option>Production Floor</option>
+                        <option>Packing Area</option>
+                        <option>Utility Area</option>
+                        <option>Maintenance Room</option>
+                        <option>Walkway / Corridor</option>
+                        <option>Canteen / Rest Area</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="fives_audit_ref">Audit Reference No.</label>
+                    <input class="field-input" type="text" id="fives_audit_ref" name="fives_audit_ref" placeholder="e.g. 5S-AUD-2024-07">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="fives_score">5S Score (if audited)</label>
+                    <input class="field-input" type="number" id="fives_score" name="fives_score" min="0" max="100" placeholder="Score out of 100">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="fives_responsible_person">Area Responsible Person</label>
+                    <input class="field-input" type="text" id="fives_responsible_person" name="fives_responsible_person" placeholder="Name of person responsible for this area">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="fives_repeat_violation">Repeat Violation?</label>
+                    <select class="field-input field-select" id="fives_repeat_violation" name="fives_repeat_violation">
+                        <option value="" disabled selected>Select</option>
+                        <option value="no">No — first occurrence</option>
+                        <option value="yes">Yes — happened before</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label class="field-label" for="extra_desc">Violation Description *</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Describe what you found and where exactly…" required></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── SENSOR CHECKLIST ── #}
+        {% elif department == 'sensor_checklist' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Sensor Details</h2>
+                    <p class="form-section-sub">Identify the sensor and last calibration status.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="sc_sensor_id">Sensor ID / Tag *</label>
+                    <input class="field-input" type="text" id="sc_sensor_id" name="sc_sensor_id" required placeholder="e.g. TT-101, PT-205">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine / Equipment *</label>
+                    <select class="field-input field-select" id="machine_name" name="machine_name" required>
+                        <option value="" disabled selected>Select Machine</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="sc_sensor_type">Sensor Type *</label>
+                    <select class="field-input field-select" id="sc_sensor_type" name="sc_sensor_type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option>Temperature sensor (RTD / Thermocouple)</option>
+                        <option>Pressure transmitter</option>
+                        <option>Flow meter</option>
+                        <option>Level sensor</option>
+                        <option>Proximity sensor</option>
+                        <option>Vibration sensor</option>
+                        <option>IR / Optical sensor</option>
+                        <option>Current / Voltage transducer</option>
+                        <option>Humidity sensor</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="sc_last_calibration">Last Calibration Date</label>
+                    <input class="field-input" type="date" id="sc_last_calibration" name="sc_last_calibration">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="sc_next_calibration">Next Calibration Due</label>
+                    <input class="field-input" type="date" id="sc_next_calibration" name="sc_next_calibration">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="problem_type">Issue Found *</label>
+                    <select class="field-input field-select" id="problem_type" name="problem_type" required>
+                        <option value="" disabled selected>Select Issue</option>
+                        <option>Signal drift out of range</option>
+                        <option>No signal / dead sensor</option>
+                        <option>Slow response time</option>
+                        <option>Calibration overdue</option>
+                        <option>Physical damage</option>
+                        <option>Incorrect reading vs reference</option>
+                        <option>Intermittent signal</option>
+                        <option>All checks passed — routine log</option>
                     </select>
                 </div>
 
@@ -87,29 +666,179 @@
 
         <div class="form-section">
             <div class="form-section-header">
-                <span class="section-num">02</span>
+                <span class="section-num">03</span>
                 <div>
-                    <h2 class="form-section-title">Evidence Upload</h2>
-                    <p class="form-section-sub">Optional photo or audio.</p>
+                    <h2 class="form-section-title">Sensor Health Checklist</h2>
+                    <p class="form-section-sub">Mark each check as Pass, Fail, or N/A.</p>
                 </div>
             </div>
+            <div style="padding: 1.5rem;">
+                <table class="checklist-table">
+                    <thead>
+                        <tr>
+                            <th>Check Item</th>
+                            <th>Pass</th>
+                            <th>Fail</th>
+                            <th>N/A</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sensor_checks = [
+                            ('signal_present',      'Signal present and stable'),
+                            ('reading_in_range',    'Reading within expected range'),
+                            ('response_time_ok',    'Response time acceptable'),
+                            ('calibration_valid',   'Calibration certificate valid'),
+                            ('physical_condition',  'Physical condition — no damage or corrosion'),
+                            ('wiring_secure',       'Wiring and connections secure'),
+                            ('zero_span_ok',        'Zero and span check passed'),
+                            ('comms_ok',            'Communication to control system OK'),
+                        ] %}
+                        {% for field_name, label in sensor_checks %}
+                        <tr>
+                            <td class="check-label">{{ label }}</td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="pass"> <span class="radio-lbl pass">Pass</span></label></td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="fail"> <span class="radio-lbl fail">Fail</span></label></td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="na"> <span class="radio-lbl na">N/A</span></label></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
+                <div class="field" style="margin-top:1.25rem">
+                    <label class="field-label" for="extra_desc">Additional Notes</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Any further observations about this sensor…"></textarea>
+                </div>
+            </div>
+        </div>
+
+        {# ── STARTUP CHECKLIST ── #}
+        {% elif department == 'startup_checklist' %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">02</span>
+                <div>
+                    <h2 class="form-section-title">Startup Details</h2>
+                    <p class="form-section-sub">Machine, shift, and operator performing startup.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+
+                <div class="field">
+                    <label class="field-label" for="machine_name">Machine *</label>
+                    <select class="field-input field-select" id="machine_name" name="machine_name" required>
+                        <option value="" disabled selected>Select Machine</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="su_shift">Shift *</label>
+                    <select class="field-input field-select" id="su_shift" name="su_shift" required>
+                        <option value="" disabled selected>Select Shift</option>
+                        <option>Morning (06:00–14:00)</option>
+                        <option>Afternoon (14:00–22:00)</option>
+                        <option>Night (22:00–06:00)</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="su_startup_time">Startup Time *</label>
+                    <input class="field-input" type="time" id="su_startup_time" name="su_startup_time" required>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="su_production_order">Production Order / Job No.</label>
+                    <input class="field-input" type="text" id="su_production_order" name="su_production_order" placeholder="e.g. PO-2024-0088">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">03</span>
+                <div>
+                    <h2 class="form-section-title">Startup Checklist</h2>
+                    <p class="form-section-sub">Verify each item before starting the machine. Mark Pass, Fail, or N/A.</p>
+                </div>
+            </div>
+            <div style="padding: 1.5rem;">
+                <table class="checklist-table">
+                    <thead>
+                        <tr>
+                            <th>Check Item</th>
+                            <th>Pass</th>
+                            <th>Fail</th>
+                            <th>N/A</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set startup_checks = [
+                            ('power_supply_ok',       'Power supply verified'),
+                            ('guards_in_place',       'All safety guards in place'),
+                            ('interlocks_functional', 'Interlocks functional'),
+                            ('emergency_stop_ok',     'Emergency stop tested'),
+                            ('lubrication_ok',        'Lubrication / oil level checked'),
+                            ('air_pressure_ok',       'Air pressure within range'),
+                            ('sensors_responding',    'Sensors responding correctly'),
+                            ('control_panel_ok',      'Control panel — no active alarms'),
+                            ('tooling_correct',       'Tooling / setup correct for job'),
+                            ('area_clear',            'Work area clear of obstructions'),
+                            ('ppe_worn',              'Operator PPE worn'),
+                            ('handover_complete',     'Previous shift handover completed'),
+                        ] %}
+                        {% for field_name, label in startup_checks %}
+                        <tr>
+                            <td class="check-label">{{ label }}</td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="pass"> <span class="radio-lbl pass">Pass</span></label></td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="fail"> <span class="radio-lbl fail">Fail</span></label></td>
+                            <td><label class="radio-wrap"><input type="radio" name="{{ field_name }}" value="na"> <span class="radio-lbl na">N/A</span></label></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="field" style="margin-top:1.25rem">
+                    <label class="field-label" for="extra_desc">Issues Found / Notes</label>
+                    <textarea class="field-input field-textarea" id="extra_desc" name="extra_desc" rows="3" placeholder="Note any items that failed or need attention before startup…"></textarea>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        {# ═══════════════════════════════════════════════════
+           EVIDENCE UPLOAD — shown for complaint depts only
+           ═══════════════════════════════════════════════════ #}
+        {% if department in ['electrical','mechanical','supervisor','ics_compliance','ehs_observation','maintenance_feedback','5s_compliance'] %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <span class="section-num">{% if department in ['electrical','mechanical','supervisor'] %}03{% else %}03{% endif %}</span>
+                <div>
+                    <h2 class="form-section-title">Evidence Upload</h2>
+                    <p class="form-section-sub">Optional photo or audio supporting the report.</p>
+                </div>
+            </div>
             <div class="form-grid">
                 <div class="field">
                     <label class="field-label">Photo Upload</label>
                     <input class="field-input" type="file" name="photo" accept="image/*">
                 </div>
-
                 <div class="field">
                     <label class="field-label">Audio Upload</label>
                     <input class="field-input" type="file" name="audio" accept="audio/*">
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <div class="form-actions">
             <a href="{{ url_for('public.index') }}" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-submit">Submit Complaint</button>
+            <button type="submit" class="btn-submit">
+                {% if department in ['sensor_checklist','startup_checklist'] %}Submit Checklist
+                {% elif department == 'maintenance_feedback' %}Submit Feedback
+                {% elif department == 'ehs_observation' %}Log Observation
+                {% else %}Submit Report{% endif %}
+            </button>
         </div>
 
     </form>
@@ -118,76 +847,54 @@
 <script>
 const machinesByLocation = {
     PMD: [
-        "LAMINA FEED LIS",
-        "BTD",
-        "DECASER",
-        "DCCC",
-        "Lamina KTC/Cutter",
-        "KLD",
-        "CT BIN",
-        "ADMOIST FEED",
-        "ADMOIST",
-        "STEM CUTTER / STEM BIN",
-        "STEM DRYER",
-        "SILO"
+        "LAMINA FEED LIS","BTD","DECASER","DCCC","Lamina KTC/Cutter",
+        "KLD","CT BIN","ADMOIST FEED","ADMOIST","STEM CUTTER / STEM BIN",
+        "STEM DRYER","SILO"
     ],
-
     SMD: Array.from({ length: 61 }, (_, i) => "Machine Number " + (i + 20)),
-
-    "Production Floor": [
-        "Main Conveyor",
-        "Control Panel",
-        "Inspection Table"
-    ],
-
-    "Packing Area": [
-        "Packing Machine 1",
-        "Packing Machine 2",
-        "Carton Sealer",
-        "Label Printer"
-    ],
-
-    "Utility Area": [
-        "Compressor",
-        "Boiler",
-        "Chiller",
-        "Air Dryer"
-    ],
-
-    "Maintenance Room": [
-        "Tool Station",
-        "Spare Parts Rack"
-    ]
+    "Production Floor": ["Main Conveyor","Control Panel","Inspection Table"],
+    "Packing Area": ["Packing Machine 1","Packing Machine 2","Carton Sealer","Label Printer"],
+    "Utility Area": ["Compressor","Boiler","Chiller","Air Dryer"],
+    "Maintenance Room": ["Tool Station","Spare Parts Rack"]
 };
 
 const locationSelect = document.getElementById("location");
-const machineSelect = document.getElementById("machine_name");
+const machineSelect  = document.getElementById("machine_name");
 const machineIdInput = document.getElementById("machine_id");
-const issueSelect = document.getElementById("problem_type");
+const issueSelect    = document.getElementById("problem_type");
 const descriptionInput = document.getElementById("description");
 
-locationSelect.addEventListener("change", function () {
-    const selectedLocation = this.value;
-
-    machineSelect.innerHTML = '<option value="" disabled selected>Select Machine</option>';
-    machineIdInput.value = "N/A";
-
-    if (machinesByLocation[selectedLocation]) {
-        machinesByLocation[selectedLocation].forEach(machine => {
-            const option = document.createElement("option");
-            option.value = machine;
-            option.textContent = machine;
-            machineSelect.appendChild(option);
+if (locationSelect && machineSelect) {
+    locationSelect.addEventListener("change", function () {
+        machineSelect.innerHTML = '<option value="" disabled selected>Select Machine</option>';
+        if (machineIdInput) machineIdInput.value = "N/A";
+        (machinesByLocation[this.value] || []).forEach(m => {
+            const o = document.createElement("option");
+            o.value = o.textContent = m;
+            machineSelect.appendChild(o);
         });
-    }
-});
+    });
+    machineSelect.addEventListener("change", function () {
+        if (machineIdInput) machineIdInput.value = this.value;
+    });
+}
 
-machineSelect.addEventListener("change", function () {
-    machineIdInput.value = this.value;
-});
+if (issueSelect && descriptionInput) {
+    issueSelect.addEventListener("change", function () {
+        descriptionInput.value = this.value;
+    });
+}
 
-issueSelect.addEventListener("change", function () {
-    descriptionInput.value = this.value;
+/* Startup / Sensor checklist — flag any fails in description */
+const radios = document.querySelectorAll('input[type="radio"][value="fail"]');
+radios.forEach(r => {
+    r.addEventListener("change", function () {
+        const fails = [...document.querySelectorAll('input[type="radio"][value="fail"]:checked')]
+            .map(el => el.name.replace(/_/g,' '));
+        if (descriptionInput) {
+            descriptionInput.value = fails.length ? "FAILED: " + fails.join(", ") : "No extra description";
+        }
+    });
 });
 </script>
 

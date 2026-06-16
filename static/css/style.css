@@ -2207,3 +2207,232 @@ main.container { padding-top: 3rem; padding-bottom: 4rem; }
     background: rgba(22, 163, 74, 0.16);
     border-color: rgba(74, 222, 128, 0.45);
 }
+
+/* ============================================
+   NEW DEPARTMENTS — append to style.css
+   Covers: ICS, EHS, Maintenance, 5S, Sensor, Startup
+   + shared checklist table styles
+   ============================================ */
+
+/* ── CSS Variables for new depts ── */
+:root {
+    --ics-clr:   #14b8a6;
+    --ics-dim:   #0b5e57;
+    --ics-glow:  rgba(20,184,166,0.10);
+
+    --ehs-clr:   #f97316;
+    --ehs-dim:   #7c2d00;
+    --ehs-glow:  rgba(249,115,22,0.10);
+
+    --maint-clr: #22c55e;
+    --maint-dim: #14532d;
+    --maint-glow:rgba(34,197,94,0.10);
+
+    --fives-clr: #ec4899;
+    --fives-dim: #831843;
+    --fives-glow:rgba(236,72,153,0.10);
+
+    --sensor-clr:#ef4444;
+    --sensor-dim:#7f1d1d;
+    --sensor-glow:rgba(239,68,68,0.10);
+
+    --startup-clr:#8b5cf6;
+    --startup-dim:#3b0764;
+    --startup-glow:rgba(139,92,246,0.10);
+}
+
+/* ── Left bar colour strips ── */
+.dept-ics::before      { background: var(--ics-clr);     }
+.dept-ehs::before      { background: var(--ehs-clr);     }
+.dept-maintenance::before { background: var(--maint-clr);}
+.dept-5s::before       { background: var(--fives-clr);   }
+.dept-sensor::before   { background: var(--sensor-clr);  }
+.dept-startup::before  { background: var(--startup-clr); }
+
+/* ── Hover states ── */
+.dept-ics:hover        { border-color: var(--ics-clr);     background: var(--ics-glow);     }
+.dept-ehs:hover        { border-color: var(--ehs-clr);     background: var(--ehs-glow);     }
+.dept-maintenance:hover{ border-color: var(--maint-clr);   background: var(--maint-glow);   }
+.dept-5s:hover         { border-color: var(--fives-clr);   background: var(--fives-glow);   }
+.dept-sensor:hover     { border-color: var(--sensor-clr);  background: var(--sensor-glow);  }
+.dept-startup:hover    { border-color: var(--startup-clr); background: var(--startup-glow); }
+
+/* ── Card animations (stagger from card 4 onwards) ── */
+.dept-card:nth-child(4) { animation-delay: 0.15s; }
+.dept-card:nth-child(5) { animation-delay: 0.2s; }
+.dept-card:nth-child(6) { animation-delay: 0.25s; }
+.dept-card:nth-child(7) { animation-delay: 0.3s; }
+.dept-card:nth-child(8) { animation-delay: 0.35s; }
+.dept-card:nth-child(9) { animation-delay: 0.4s; }
+
+/* ── Icon wrap backgrounds ── */
+.dept-ics .dept-icon-wrap      { background: rgba(20,184,166,0.12);  color: var(--ics-clr);     }
+.dept-ehs .dept-icon-wrap      { background: rgba(249,115,22,0.12);  color: var(--ehs-clr);     }
+.dept-maintenance .dept-icon-wrap { background: rgba(34,197,94,0.12); color: var(--maint-clr);  }
+.dept-5s .dept-icon-wrap       { background: rgba(236,72,153,0.12);  color: var(--fives-clr);   }
+.dept-sensor .dept-icon-wrap   { background: rgba(239,68,68,0.12);   color: var(--sensor-clr);  }
+.dept-startup .dept-icon-wrap  { background: rgba(139,92,246,0.12);  color: var(--startup-clr); }
+
+/* ── Dept tag colours ── */
+.dept-ics .dept-tag            { color: var(--ics-clr);     }
+.dept-ehs .dept-tag            { color: var(--ehs-clr);     }
+.dept-maintenance .dept-tag    { color: var(--maint-clr);   }
+.dept-5s .dept-tag             { color: var(--fives-clr);   }
+.dept-sensor .dept-tag         { color: var(--sensor-clr);  }
+.dept-startup .dept-tag        { color: var(--startup-clr); }
+
+/* ── CTA arrow colours ── */
+.dept-ics .dept-cta            { color: var(--ics-clr);     }
+.dept-ehs .dept-cta            { color: var(--ehs-clr);     }
+.dept-maintenance .dept-cta    { color: var(--maint-clr);   }
+.dept-5s .dept-cta             { color: var(--fives-clr);   }
+.dept-sensor .dept-cta         { color: var(--sensor-clr);  }
+.dept-startup .dept-cta        { color: var(--startup-clr); }
+
+/* ── dept-stat block (open count on home cards) ── */
+.dept-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--clr-border);
+}
+.dept-stat-num {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--clr-text);
+}
+.dept-stat-lbl {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--clr-text-dim);
+}
+.dept-electrical .dept-stat-num { color: var(--elec-clr); }
+.dept-mechanical .dept-stat-num { color: var(--mech-clr); }
+.dept-supervisor .dept-stat-num  { color: var(--sup-clr);  }
+.dept-ics .dept-stat-num         { color: var(--ics-clr);     }
+.dept-ehs .dept-stat-num         { color: var(--ehs-clr);     }
+.dept-maintenance .dept-stat-num { color: var(--maint-clr);   }
+.dept-5s .dept-stat-num          { color: var(--fives-clr);   }
+.dept-sensor .dept-stat-num      { color: var(--sensor-clr);  }
+.dept-startup .dept-stat-num     { color: var(--startup-clr); }
+
+/* ── Department grid: 3-col capped, wraps to 2-col ── */
+.department-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 1100px) {
+    .department-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 900px) {
+    .department-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* Remove old 3rd-child span that broke 9-card layout */
+    .dept-card:nth-child(3) {
+        grid-column: auto;
+    }
+}
+@media (max-width: 640px) {
+    .department-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Form badge colours for new depts ── */
+.form-dept-badge.dept-badge-ics_compliance    { background: rgba(20,184,166,0.15);  color: var(--ics-clr);     }
+.form-dept-badge.dept-badge-ehs_observation   { background: rgba(249,115,22,0.15);  color: var(--ehs-clr);     }
+.form-dept-badge.dept-badge-maintenance_feedback { background: rgba(34,197,94,0.15); color: var(--maint-clr);  }
+.form-dept-badge.dept-badge-5s_compliance     { background: rgba(236,72,153,0.15);  color: var(--fives-clr);   }
+.form-dept-badge.dept-badge-sensor_checklist  { background: rgba(239,68,68,0.15);   color: var(--sensor-clr);  }
+.form-dept-badge.dept-badge-startup_checklist { background: rgba(139,92,246,0.15);  color: var(--startup-clr); }
+
+/* ── Department chip colours for new depts (admin table) ── */
+.dept-chip-ics_compliance     { background: rgba(20,184,166,0.15);  color: var(--ics-clr);     }
+.dept-chip-ehs_observation    { background: rgba(249,115,22,0.15);  color: var(--ehs-clr);     }
+.dept-chip-maintenance_feedback { background: rgba(34,197,94,0.15); color: var(--maint-clr);   }
+.dept-chip-5s_compliance      { background: rgba(236,72,153,0.15);  color: var(--fives-clr);   }
+.dept-chip-sensor_checklist   { background: rgba(239,68,68,0.15);   color: var(--sensor-clr);  }
+.dept-chip-startup_checklist  { background: rgba(139,92,246,0.15);  color: var(--startup-clr); }
+
+/* ══════════════════════════════════════════════
+   CHECKLIST TABLE (Sensor & Startup checklists)
+   ══════════════════════════════════════════════ */
+
+.checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+.checklist-table thead {
+    background: rgba(0,0,0,0.2);
+}
+.checklist-table th {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--clr-text-dim);
+    border-bottom: 1px solid var(--clr-border);
+}
+.checklist-table th:not(:first-child) {
+    text-align: center;
+    width: 72px;
+}
+.checklist-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(42,48,72,0.4);
+    vertical-align: middle;
+    color: var(--clr-text);
+}
+.checklist-table tr:last-child td {
+    border-bottom: none;
+}
+.checklist-table tr:hover td {
+    background: var(--clr-surface-2);
+}
+.check-label {
+    font-size: 0.875rem;
+    color: var(--clr-text-muted);
+}
+
+/* Radio wrapper */
+.radio-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 0.35rem;
+}
+.radio-wrap input[type="radio"] {
+    accent-color: var(--clr-amber);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.radio-lbl {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.radio-lbl.pass { color: var(--clr-green);    }
+.radio-lbl.fail { color: var(--clr-red);      }
+.radio-lbl.na   { color: var(--clr-text-dim); }
+
+/* Highlight row red when any radio in that row is fail */
+.checklist-table tr:has(input[value="fail"]:checked) td {
+    background: rgba(239,68,68,0.05);
+}
+.checklist-table tr:has(input[value="fail"]:checked) .check-label {
+    color: var(--clr-red);
+}

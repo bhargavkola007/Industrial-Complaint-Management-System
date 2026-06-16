@@ -11,6 +11,7 @@ from routes.admin_routes import admin_bp
 from routes.operator_routes import operator_bp
 from routes.buzzer_routes import buzzer_bp
 from routes.utils import format_seconds
+from models.sensor_history import SensorHistory
 
 try:
     from routes.sensor_routes import sensor_bp

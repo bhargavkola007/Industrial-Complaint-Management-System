@@ -23,3 +23,7 @@ class Config:
     CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
 
     BUZZER_API_TOKEN = os.environ.get("BUZZER_API_TOKEN", "industrial-buzzer-123")
+    AUTO_COMPLAINT_API_TOKEN = os.environ.get(
+    "AUTO_COMPLAINT_API_TOKEN",
+    "auto-complaint-123"
+    )

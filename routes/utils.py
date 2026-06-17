@@ -23,7 +23,14 @@ def role_required(*roles):
 def operator_department_required(complaint):
     if current_user.role == "ADMIN":
         return
-    if current_user.role != "OPERATOR" or current_user.department != complaint.department:
+
+    if current_user.role != "OPERATOR":
+        abort(403)
+
+    user_dept = (current_user.department or "").strip().lower()
+    complaint_dept = (complaint.department or "").strip().lower()
+
+    if user_dept != complaint_dept:
         abort(403)
 
 

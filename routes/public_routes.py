@@ -43,7 +43,12 @@ def complaint_form(department):
 @public_bp.route("/submit-complaint", methods=["POST"])
 def submit_complaint():
     try:
-        department = request.form.get("department", "").strip()
+        department_key = request.form.get("department", "").strip().lower()
+        department = DEPARTMENTS.get(department_key)
+
+        if not department:
+            flash("Invalid department selected.", "danger")
+            return redirect(url_for("public.index"))
         machine_id = request.form.get("machine_id", "N/A").strip() or "N/A"
         machine_name = request.form.get("machine_name", "N/A").strip() or "N/A"
         problem_type = request.form.get("problem_type", "General Report").strip() or "General Report"
@@ -76,7 +81,7 @@ def submit_complaint():
             employee_name=request.form.get("employee_name"),
             employee_id=request.form.get("employee_id", "N/A"),
             employee_phone=request.form.get("employee_phone"),
-            department=department,
+            department=DEPARTMENTS[department_key],
             machine_name=machine_name,
             machine_id=machine_id,
             location=request.form.get("location"),

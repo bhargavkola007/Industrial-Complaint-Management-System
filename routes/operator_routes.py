@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
+from sqlalchemy import func
 
 from models import db
 from models.complaint import Complaint, now_india
@@ -7,24 +8,33 @@ from models.forward_history import ForwardHistory
 from models.machine import Machine
 from .utils import role_required, operator_department_required
 
+
 operator_bp = Blueprint("operator", __name__, url_prefix="/operator")
+
+
+def normalize_dept(value):
+    return (value or "").strip().lower()
 
 
 @operator_bp.route("/dashboard")
 @login_required
 @role_required("OPERATOR")
 def dashboard():
+    user_dept = normalize_dept(current_user.department)
+
     complaints = (
         Complaint.query
-        .filter_by(department=current_user.department)
+        .filter(func.lower(func.trim(Complaint.department)) == user_dept)
         .order_by(Complaint.created_at.desc())
         .all()
     )
 
-    active_buzzer_count = Complaint.query.filter_by(
-        department=current_user.department,
-        buzzer_active=True
-    ).count()
+    active_buzzer_count = (
+        Complaint.query
+        .filter(func.lower(func.trim(Complaint.department)) == user_dept)
+        .filter(Complaint.buzzer_active == True)
+        .count()
+    )
 
     return render_template(
         "operator_dashboard.html",
@@ -38,10 +48,14 @@ def dashboard():
 @login_required
 @role_required("OPERATOR")
 def stop_buzzer():
-    Complaint.query.filter_by(
-        department=current_user.department,
-        buzzer_active=True
-    ).update({"buzzer_active": False})
+    user_dept = normalize_dept(current_user.department)
+
+    (
+        Complaint.query
+        .filter(func.lower(func.trim(Complaint.department)) == user_dept)
+        .filter(Complaint.buzzer_active == True)
+        .update({"buzzer_active": False}, synchronize_session=False)
+    )
 
     db.session.commit()
     flash("Buzzer stopped.", "success")

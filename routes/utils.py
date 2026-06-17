@@ -7,28 +7,38 @@ import cloudinary.uploader
 import uuid
 
 
+def normalize_dept(value):
+    return (value or "").strip().lower()
+
+
 def role_required(*roles):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             if not current_user.is_authenticated:
                 abort(401)
-            if current_user.role not in roles:
+
+            user_role = (current_user.role or "").strip().upper()
+
+            if user_role not in roles:
                 abort(403)
+
             return fn(*args, **kwargs)
         return wrapper
     return decorator
 
 
 def operator_department_required(complaint):
-    if current_user.role == "ADMIN":
+    user_role = (current_user.role or "").strip().upper()
+
+    if user_role == "ADMIN":
         return
 
-    if current_user.role != "OPERATOR":
+    if user_role != "OPERATOR":
         abort(403)
 
-    user_dept = (current_user.department or "").strip().lower()
-    complaint_dept = (complaint.department or "").strip().lower()
+    user_dept = normalize_dept(current_user.department)
+    complaint_dept = normalize_dept(complaint.department)
 
     if user_dept != complaint_dept:
         abort(403)

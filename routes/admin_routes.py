@@ -63,16 +63,21 @@ def dashboard():
         ).count(),
     }
 
+    dept_counts = {key: 0 for key in DEPARTMENTS.keys()}
+
     dept_rows = (
         db.session.query(Complaint.department, func.count(Complaint.id))
         .group_by(Complaint.department)
         .all()
     )
 
-    dept_counts = dict(dept_rows)
+    for dept_name, count in dept_rows:
+        dept_name_clean = (dept_name or "").strip().lower()
 
-    for dept_key in DEPARTMENTS.keys():
-        dept_counts.setdefault(dept_key, 0)
+        for dept_key, display_name in DEPARTMENTS.items():
+            if dept_name_clean == display_name.lower() or dept_name_clean == dept_key.lower():
+                dept_counts[dept_key] += count
+                break
 
     resolved = Complaint.query.filter(Complaint.resolved_at.isnot(None)).all()
 
@@ -94,11 +99,36 @@ def dashboard():
         departments=DEPARTMENTS,
     )
 
-
 @admin_bp.route("/complaints")
 @login_required
 @role_required("ADMIN")
 def complaints():
+    department = request.args.get("department")
+    status = request.args.get("status")
+    priority = request.args.get("priority")
+
+    query = Complaint.query
+
+    if department:
+        dept_value = DEPARTMENTS.get(department, department)
+        query = query.filter(
+            func.lower(func.trim(Complaint.department)) == dept_value.lower()
+        )
+
+    if status:
+        query = query.filter_by(status=status)
+
+    if priority:
+        query = query.filter_by(priority=priority)
+
+    complaints = query.order_by(Complaint.created_at.desc()).all()
+
+    return render_template(
+        "operator_dashboard.html",
+        complaints=complaints,
+        is_admin_list=True,
+        departments=DEPARTMENTS,
+    )
     department = request.args.get("department")
     status = request.args.get("status")
     priority = request.args.get("priority")
